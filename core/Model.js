@@ -12,8 +12,8 @@ class Model {
       throw new Error('AdapterNotSetError');
     }
 
-    // TODO: Promises/generator...
-    this.adapter = new (require(`../adapters/${this.adapters[this.parameters.settings.database]}.js`))(this.parameters);
+    // TODO: Promises/generators...
+    this.adapter = new (require(`../adapters/${this.adapters[this.parameters.settings.database]}.js`))(this);
     this.adapter.connect((err) => {
       if (err) throw err;
 
@@ -26,9 +26,6 @@ class Model {
       });
     });
   }
-
-  WRITE(data, metric) {}
-  READ(metric) {}
 }
 
 module.exports = Model;
