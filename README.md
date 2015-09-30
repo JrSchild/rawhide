@@ -1,10 +1,13 @@
 ### Rawhide Testing Framework
+A Node.js powered database testing framework. It is slightly based on the YCSB benchmark and is highly extensible.
 
+#### Requirements
+- Node.js 4.1 or higher
 
 #### Classes
-Spawner: Spawns workload threads and collects metrics.
+Spawner: Spawns workload threads and collects metrics.  
 Workload: Generates data and passes it to the model/adapter.   
-Model: Optionally transforms incoming data from the workload.  
+Model: Optionally transforms incoming data from the workload or database.  
 Adapter: Defines model-specific transactions to the database. Each model has an adapter for every kind of database.  
 Database: Database specific methods. These are automatically copied to the adapter.  
 
@@ -20,11 +23,10 @@ Rawhide should retrieve the following metrics:
 - disk size
 
 #### TODO
-
+- Design the model and adapter in such a way that the model can be omitted.
+	- Connecting should go through the adapter rather than through the model.
 
 #### Wishlist
-- Design the model and adapter in such a way that the model can be omitted.  
-	- Connecting should go through the adapter rather than through the model.
 - Most awesome way for this to work is use `npm install -g rawhide` to install the framework.
 	- `rawhide init` to create a dummy test case with configuration, basic adapters, models and workloads.
 	- `rawhide run` start the testcase.
