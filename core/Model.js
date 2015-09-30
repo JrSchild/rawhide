@@ -1,5 +1,10 @@
 "use strict"
 
+/**
+ * Class that transforms incoming data and passes it through to the adapter.
+ * This is used to benchmark the impact of data that needs to be processed
+ * before it can be saved.
+ */
 class Model {
   constructor(parameters, adapters) {
     this.parameters = parameters;

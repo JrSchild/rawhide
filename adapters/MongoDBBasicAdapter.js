@@ -2,8 +2,7 @@
 
 var Adapter = require('../core/Adapter.js');
 
-// Database functionality is automatically injected.
-class BasicAdapter extends Adapter {
+class MongoDBBasicAdapter extends Adapter {
   WRITE(data, metric) {}
   READ(metric) {}
 
@@ -17,4 +16,4 @@ class BasicAdapter extends Adapter {
   destroy() {}
 }
 
-module.exports = BasicAdapter;
+module.exports = MongoDBBasicAdapter;

@@ -3,7 +3,7 @@
 var Model = require('../core/Model.js');
 
 const ADAPTERS = {
-  MongoDB: 'BasicAdapter'
+  MongoDB: 'MongoDBBasicAdapter'
 };
 
 class BasicModel extends Model {

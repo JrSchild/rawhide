@@ -1,5 +1,14 @@
 "use strict"
 
+/**
+ * A class that discretely divides the load over the given names with the given
+ * proportions. The total proportions do not necessarily have to add up to one.
+ * Usage:
+ * van discrete = new DiscreteGenerator({
+ *   WRITE: 0.6,
+ *   READ: 0.4
+ * });
+ */
 class DiscreteGenerator {
   constructor(proportions) {
 

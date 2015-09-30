@@ -4,9 +4,6 @@ var DiscreteGenerator = require('./DiscreteGenerator.js');
 var LimitCounter = require('./LimitCounter.js');
 var settings = require('../settings.json').workload;
 
-// When throughtputMode set to true: rather than running with a fixed number of operations
-// per second, it will try to execute as many operations as possible.
-
 /**
  * Process Events:
  *   connected       - Database connection successfuly established.
@@ -70,17 +67,6 @@ class Workload {
   run() {}
 
   stop() {}
-
-  // Define transactions
-  WRITE(metric) {
-    return Math.random();
-    // return this.model.write({someData: true}, metric);
-  }
-
-  READ(metric) {
-    return Math.round(Math.random() * 100);
-    // return this.model.read(metric);
-  }
 }
 
 module.exports = Workload;

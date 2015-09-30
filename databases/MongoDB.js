@@ -15,6 +15,8 @@ class MongoDB {
   }
 
   getIndexMemory() {}
+
+  getDiskSize() {}
 }
 
 module.exports = MongoDB;
