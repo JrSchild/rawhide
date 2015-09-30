@@ -1,0 +1,18 @@
+{
+	"database": "MongoDB",
+	"threads": [
+		{
+			"workload": "BasicWorkload",
+			"model": "BasicModel",
+			"tableName": "table",
+			"fieldCount": 10,
+			"multiply": 1,
+			"proportions": {
+				"WRITE": 0.4,
+				"READ": 0.6
+			},
+			"operations": 1e6
+		}
+	],
+	"loadRecords": 4e5
+}

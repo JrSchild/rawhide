@@ -1,0 +1,16 @@
+{
+	"throughput": {
+		"targetLatency": 5000,
+		"startOperationsPerSecond": 100,
+		"maxOperationsPerSecond": 40000,
+		"startDeltaOperationsPerSecond": 16,
+		"setInterval": 2000
+	},
+	"workload": {
+		"throughtputMode": false,
+		"operationsPerSecond": 4000,
+		"tableName": "table",
+		"fieldCount": 10,
+		"loadSplit": 10
+	}
+}
