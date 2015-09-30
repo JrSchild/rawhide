@@ -11,10 +11,12 @@ class Spawner {
     this.settings = settings;
     this.threads = [];
     this.threadsConnected = [];
+    this.threadsLoaded = [];
     this.spawnThreads();
     this.throughputController = new ThroughputController(this.threads);
 
     Promise.all(this.threadsConnected).then(() => this.startLoad());
+    Promise.all(this.threadsLoaded).then(() => console.log('All threads are loaded'));
   }
 
   spawnThreads() {
@@ -24,7 +26,8 @@ class Spawner {
   }
 
   spawnThread(thread) {
-    var resolver = Promise.pending();
+    var resolverConnected = Promise.pending();
+    var resolverLoaded = Promise.pending();
     var process = fork(path.resolve(__dirname, '../client.js'));
 
     // TODO: Imporove error handling.
@@ -34,9 +37,12 @@ class Spawner {
     // When process is connected
     process.on('message', (message) => {
       if (message.type === 'connected') {
-        resolver.resolve();
+        resolverConnected.resolve();
+      } else if (message.type === 'finishedLoading') {
+        resolverLoaded.resolve();
       } else if (message.type === 'connectionError') {
-        resolver.reject('NotConnectedError');
+        resolverConnected.reject('NotConnectedError');
+        resolverLoaded.reject('NotConnectedError');
       }
     });
 
@@ -49,7 +55,8 @@ class Spawner {
       }
     });
     this.threads.push(process);
-    this.threadsConnected.push(resolver.promise);
+    this.threadsConnected.push(resolverConnected.promise);
+    this.threadsLoaded.push(resolverLoaded.promise);
   }
 
   startLoad() {

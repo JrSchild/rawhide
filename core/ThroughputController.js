@@ -39,7 +39,7 @@ class ThroughputController {
 		setInterval(() => {
 			var currentLatency = _.sum(this.latencies) / this.latencies.length;
 
-			console.log(`current avg latency ${currentLatency}`);
+			// console.log(`current avg latency ${currentLatency}`);
 
 			// Start fresh on next iteration.
 			this.latencies = [];

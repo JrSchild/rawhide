@@ -2,6 +2,7 @@
 
 var Adapter = require('../core/Adapter.js');
 
+// Database functionality is automatically injected.
 class BasicAdapter extends Adapter {
   WRITE(data, metric) {}
   READ(metric) {}
@@ -11,6 +12,9 @@ class BasicAdapter extends Adapter {
       .then(() => cb())
       .catch((err) => cb(err));
   }
+
+  // Clean up and delete database.
+  destroy() {}
 }
 
 module.exports = BasicAdapter;
