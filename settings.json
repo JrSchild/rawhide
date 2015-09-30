@@ -1,6 +1,6 @@
 {
   "throughput": {
-    "targetLatency": 5000,
+    "targetLatency": 2000,
     "startOperationsPerSecond": 100,
     "maxOperationsPerSecond": 40000,
     "startDeltaOperationsPerSecond": 16,

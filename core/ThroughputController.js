@@ -29,7 +29,7 @@ class ThroughputController {
 
 	onThreadMessage(message) {
 		if (message.type === 'latency') {
-			this.setLatency(message.value);
+			this.setLatency(message.data);
 		}
 	}
 
@@ -37,8 +37,6 @@ class ThroughputController {
 	initThroughputEmitter() {
 		setInterval(() => {
 			var currentLatency = _.sum(this.latencies) / this.latencies.length;
-
-			// console.log(`current avg latency ${currentLatency}, length: ${this.latencies.length}`);
 
 			// Start fresh on next iteration.
 			this.latencies = [];
@@ -63,12 +61,14 @@ class ThroughputController {
 			// Update operationsPerSecond and send out data.
 			this.operationsPerSecond += this.deltaOperationsPerSecond;
 			this.emitOperationsPerSecond();
+
+			console.log(`current avg latency ${currentLatency}, new opsPerSec: ${this.operationsPerSecond}, deltaOps: ${this.deltaOperationsPerSecond}`);
 		}, settings.setInterval);
 	}
 
 	// Measure average latency for the last second.
 	setLatency(latency) {
-		this.latencies.push(~~latency);
+		this.latencies.push(latency);
 	}
 
 	emitOperationsPerSecond() {

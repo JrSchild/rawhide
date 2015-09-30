@@ -38,7 +38,7 @@ class Model {
   setLatency(latency) {
     process.send({
       type: 'latency',
-      value: latency
+      data: latency
     });
   }
 }

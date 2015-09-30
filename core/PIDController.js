@@ -16,9 +16,9 @@ class PIDController {
     // If not set, it will be automatically calculated
     this.dt = dt || 0;
 
-    this.sumError  = 0;
+    this.sumError = 0;
     this.lastError = 0;
-    this.lastTime  = 0;
+    this.lastTime = 0;
 
     // default value, can be modified with .setTarget
     this.target = 0;
@@ -49,7 +49,7 @@ class PIDController {
     var error = (this.target - this.currentValue);
     this.sumError = this.sumError + error * dt;
 
-    var dError = (error - this.lastError)/dt;
+    var dError = (error - this.lastError) / dt;
     this.lastError = error;
 
     return (this.k_p * error) + (this.k_i * this.sumError) + (this.k_d * dError);

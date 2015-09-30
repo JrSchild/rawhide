@@ -21,8 +21,6 @@ class Workload {
 
     process.on('message', (message) => {
       if (message.type === 'setOperationsPerSecond') {
-        console.log(`setting operations per seconds ${message.data}`);
-
         this.operationsPerSecond = message.data;
       }
     });
@@ -47,7 +45,6 @@ class Workload {
     var interval = 1000 / settings.loadSplit;
     var opsPerInterval = ~~(this.operationsPerSecond / settings.loadSplit);
 
-    console.log(`load ${opsPerInterval} records per ${interval}ms`, Date.now(), this.counter.prepCurrent, this.counter.current);
     if (this.counter.isLimit) {
       return clearInterval(this.loadingInterval);
     }
