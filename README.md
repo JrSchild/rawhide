@@ -24,7 +24,8 @@ Rawhide should retrieve the following metrics:
 
 #### TODO
 - Design the model and adapter in such a way that the model can be omitted.
-	- Connecting should go through the adapter rather than through the model.
+	- Connecting should go through the adapter rather than the model.
+- Imporove error handling and graceful shutdown.
 
 #### Wishlist
 - Most awesome way for this to work is use `npm install -g rawhide` to install the framework.

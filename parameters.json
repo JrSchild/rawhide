@@ -14,5 +14,6 @@
       "operations": 1e6
     }
   ],
-  "loadRecords": 4e5
+  "loadRecords": 4e5,
+  "cleanupAutomatically": false
 }

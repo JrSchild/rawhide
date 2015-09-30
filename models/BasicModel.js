@@ -11,8 +11,8 @@ class BasicModel extends Model {
     super(parameters, ADAPTERS);
   }
 
-  LOAD_WRITE(done) {
-  	setTimeout(done, 1000);
+  LOAD_WRITE(data, done) {
+    this.adapter.LOAD_WRITE(data, done);
   }
 
   WRITE(data, metric) {}

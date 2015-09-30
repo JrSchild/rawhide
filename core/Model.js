@@ -17,7 +17,7 @@ class Model {
       throw new Error('AdapterNotSetError');
     }
 
-    // TODO: Promises/generators...
+    // TODO: Move to adapter and use Promises/generators...?
     this.adapter = new (require(`../adapters/${this.adapters[this.parameters.settings.database]}.js`))(this);
     this.adapter.connect((err) => {
       if (err) throw err;
@@ -29,6 +29,16 @@ class Model {
           type: 'connected'
         });
       });
+    });
+  }
+
+  // This will be replaced by smarter/better methods for metrics handling/collecting.
+  // Maybe within the done() callback of the LimitCounter. Where that class will be
+  // collect metrics data.
+  setLatency(latency) {
+    process.send({
+      type: 'latency',
+      value: latency
     });
   }
 }

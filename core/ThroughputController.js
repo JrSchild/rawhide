@@ -24,12 +24,11 @@ class ThroughputController {
 
 	// Start listening to all threads.
 	initThreads() {
-		this.threads.forEach((thread) => thread.on('message', this.onThreadMessage));
+		this.threads.forEach((thread) => thread.on('message', this.onThreadMessage.bind(this)));
 	}
 
 	onThreadMessage(message) {
 		if (message.type === 'latency') {
-			console.log('latency', message);
 			this.setLatency(message.value);
 		}
 	}
@@ -39,7 +38,7 @@ class ThroughputController {
 		setInterval(() => {
 			var currentLatency = _.sum(this.latencies) / this.latencies.length;
 
-			// console.log(`current avg latency ${currentLatency}`);
+			// console.log(`current avg latency ${currentLatency}, length: ${this.latencies.length}`);
 
 			// Start fresh on next iteration.
 			this.latencies = [];
@@ -69,7 +68,7 @@ class ThroughputController {
 
 	// Measure average latency for the last second.
 	setLatency(latency) {
-		this.latencies.push(~~latency.value);
+		this.latencies.push(~~latency);
 	}
 
 	emitOperationsPerSecond() {

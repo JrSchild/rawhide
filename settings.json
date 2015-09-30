@@ -8,9 +8,12 @@
   },
   "workload": {
     "throughtputMode": false,
-    "operationsPerSecond": 4000,
+    "operationsPerSecond": 10,
     "tableName": "table",
     "fieldCount": 10,
     "loadSplit": 10
+  },
+  "loadPhase": {
+    "recordsPerInsert": 10
   }
 }

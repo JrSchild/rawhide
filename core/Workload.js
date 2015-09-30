@@ -35,17 +35,16 @@ class Workload {
     console.log('start loading phase');
 
     this.isLoading = true;
-    this.loadingCounter = 0;
     this.counter = new LimitCounter(this.parameters.settings.loadRecords, (err) => {
       process.send({
         type: 'finishedLoading'
       });
     });
-    this.loadingInterval = setInterval(this.loadSecond.bind(this), 1e3);
+    this.loadingInterval = setInterval(this.loadSecond.bind(this), 1000);
   }
 
   loadSecond() {
-    var interval = 1e3 / settings.loadSplit;
+    var interval = 1000 / settings.loadSplit;
     var opsPerInterval = ~~(this.operationsPerSecond / settings.loadSplit);
 
     console.log(`load ${opsPerInterval} records per ${interval}ms`, Date.now(), this.counter.prepCurrent, this.counter.current);
@@ -53,6 +52,7 @@ class Workload {
       return clearInterval(this.loadingInterval);
     }
 
+    // Divide the operations per second over `settings.loadSplit` number of intervals.
     for (let i = 0; i < settings.loadSplit; i++) {
       setTimeout(() => {
         for (let l = opsPerInterval; l-- && !this.counter.isLimit;) {
