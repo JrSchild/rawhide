@@ -6,8 +6,4 @@ process.on('message', (message) => {
   } else if (message.type === 'load' && workload) {
     workload.executeLoad();
   }
-  // process.send({
-  //   type: 'latency',
-  //   data: 500
-  // });
 });
