@@ -1,10 +1,9 @@
 {
   "throughput": {
     "targetLatency": 2000,
-    "startOperationsPerSecond": 100,
     "maxOperationsPerSecond": 40000,
-    "startDeltaOperationsPerSecond": 16,
-    "setInterval": 2000
+    "minOperationsPerSecond": 1000,
+    "PIDInterval": 3000
   },
   "workload": {
     "throughtputMode": false,
