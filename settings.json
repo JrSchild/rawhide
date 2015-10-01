@@ -1,7 +1,7 @@
 {
   "throughput": {
     "targetLatency": 2000,
-    "maxOperationsPerSecond": 40000,
+    "maxOperationsPerSecond": 120000,
     "minOperationsPerSecond": 1000,
     "PIDInterval": 3000
   },

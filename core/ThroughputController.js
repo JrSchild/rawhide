@@ -64,7 +64,7 @@ class ThroughputController {
       this.currentLatency = currentLatency;
       this.emitOperationsPerSecond();
 
-      // console.log(`latency: ${currentLatency}, correction: ${correction > 0 ? '+' : ''}${correction}, opsPSec: ${this.operationsPerSecond}`);
+      console.log(`latency: ${currentLatency}, correction: ${correction > 0 ? '+' : ''}${correction}, opsPSec: ${this.operationsPerSecond}`);
     }, settings.PIDInterval);
   }
 
