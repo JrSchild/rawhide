@@ -1,8 +1,13 @@
 ### Rawhide Testing Framework
 A Node.js powered database testing framework. It is slightly based on the YCSB benchmark and is highly extensible.
 
-#### Requirements
+#### Requirements and Installation
 - Node.js 4.1 or higher
+- Docker
+	- Install docker images (coming soon)
+
+#### Usage
+To better test the maximum load on the database, each database should be run in a Docker container. The database will run in it's own virtual environment so the resources can be limited. The other upside of this is that the testframework can start and kill each database through an API.
 
 #### Classes
 Spawner: Spawns workload threads and collects metrics.  
