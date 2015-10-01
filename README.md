@@ -34,3 +34,4 @@ Rawhide should retrieve the following metrics:
 	- `rawhide run` start the testcase.
 - ThroughputController independent of settings.
 	- Implement PIDController for better algorithm to adjust operations per second.
+- The problem of ThroughputController is that it's response is too late. If the latency is five seconds, then the response of the PIDController will be five seconds behind as well.
