@@ -34,8 +34,7 @@ class Spawner {
     var process = fork(path.resolve(__dirname, '../client.js'));
 
     // TODO: Imporove error handling.
-    process.on('error', (error) => {
-    });
+    process.on('error', (error) => {});
 
     // When process is connected
     process.on('message', (message) => {

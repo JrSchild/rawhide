@@ -19,9 +19,7 @@ class DiscreteGenerator {
     // Sum the total of all proportions to calculate aspect ratio.
     this.sum = 0;
 
-    if (proportions) {
-      this.addValues(proportions);
-    }
+    this.addValues(proportions);
   }
 
   get next() {
