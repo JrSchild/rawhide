@@ -15,11 +15,11 @@ class Spawner {
     this.spawnThreads();
     this.throughputController = new ThroughputController(this.threads);
 
-    Promise.all(this.threadsConnected).then(() => this.sendToThreads('load'));
-    Promise.all(this.threadsLoaded).then(() => this.sendToThreads('run'));
-    
     Promise.all(this.threadsConnected).then(() => console.log('All threads are connected.'));
     Promise.all(this.threadsLoaded).then(() => console.log('All threads are loaded.'));
+
+    Promise.all(this.threadsConnected).then(() => this.sendToThreads(!settings.skipLoadingPhase ? 'load' : 'run'));
+    Promise.all(this.threadsLoaded).then(() => !settings.skipLoadingPhase && this.sendToThreads('run'));
   }
 
   spawnThreads() {

@@ -1,9 +1,17 @@
-var workload;
+var workload, methods;
+
+methods = {
+  init: function (message) {
+    workload = workload || new (require(`./workloads/${message.data.thread.workload}.js`))(message.data);
+  },
+  load: function () {
+    workload && workload.executeLoad();
+  },
+  run: function () {
+    workload && workload.executeRun();
+  }
+};
 
 process.on('message', (message) => {
-  if (message.type === 'init' && !workload) {
-    workload = new (require(`./workloads/${message.data.thread.workload}.js`))(message.data);
-  } else if (message.type === 'load' && workload) {
-    workload.executeLoad();
-  }
+  methods[message.type] && methods[message.type](message);
 });

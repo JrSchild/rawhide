@@ -15,6 +15,7 @@ class Workload {
     this.operationsPerSecond = settings.operationsPerSecond;
     this.loadRecords = parameters.settings.loadRecords;
     this.isLoading = false;
+    this.isLoaded = false;
 
     this.model = new (require(`../models/${parameters.thread.model}.js`))(parameters);
     this.discreteGenerator = new DiscreteGenerator(parameters.thread.proportions);
@@ -35,6 +36,9 @@ class Workload {
     this.isLoading = true;
     this.startLoadTime = Date.now();
     this.counter = new LimitCounter(this.parameters.settings.loadRecords, (err) => {
+      this.isLoading = false;
+      this.isLoaded = true;
+
       var end = Date.now() - this.startLoadTime;
       console.log('finished loading', ~~(end / 1000) + 's', `(${end})ms`);
       process.send({
@@ -43,6 +47,8 @@ class Workload {
     });
     this.loadingInterval = setInterval(this.loadSecond.bind(this), 1000);
   }
+
+  executeRun() {}
 
   loadSecond() {
     var interval = 1000 / settings.loadSplit;

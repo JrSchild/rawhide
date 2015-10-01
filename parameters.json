@@ -1,5 +1,8 @@
 {
   "database": "MongoDB",
+  "loadRecords": 5e5,
+  "cleanupAutomatically": false,
+  "skipLoadingPhase": true,
   "threads": [
     {
       "workload": "BasicWorkload",
@@ -13,7 +16,5 @@
       },
       "operations": 1e6
     }
-  ],
-  "loadRecords": 5e5,
-  "cleanupAutomatically": false
+  ]
 }
