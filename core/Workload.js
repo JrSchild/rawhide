@@ -33,7 +33,10 @@ class Workload {
     console.log('start loading phase');
 
     this.isLoading = true;
+    this.startLoadTime = Date.now();
     this.counter = new LimitCounter(this.parameters.settings.loadRecords, (err) => {
+      var end = Date.now() - this.startLoadTime;
+      console.log('finished loading', ~~(end / 1000) + 's', `(${end})ms`);
       process.send({
         type: 'finishedLoading'
       });
