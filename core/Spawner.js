@@ -15,8 +15,11 @@ class Spawner {
     this.spawnThreads();
     this.throughputController = new ThroughputController(this.threads);
 
-    Promise.all(this.threadsConnected).then(() => this.startLoad());
-    Promise.all(this.threadsLoaded).then(() => console.log('All threads are loaded'));
+    Promise.all(this.threadsConnected).then(() => this.sendToThreads('load'));
+    Promise.all(this.threadsLoaded).then(() => this.sendToThreads('run'));
+    
+    Promise.all(this.threadsConnected).then(() => console.log('All threads are connected.'));
+    Promise.all(this.threadsLoaded).then(() => console.log('All threads are loaded.'));
   }
 
   spawnThreads() {
@@ -47,24 +50,23 @@ class Spawner {
     });
 
     // Initialize the client with settings and add to list of threads.
-    process.send({
-      type: 'init',
-      data: {
-        thread: thread,
-        settings: this.settings
-      }
-    });
+    this.sendToProcess('init', {
+      thread: thread,
+      settings: this.settings
+    })(process);
     this.threads.push(process);
     this.threadsConnected.push(resolverConnected.promise);
     this.threadsLoaded.push(resolverLoaded.promise);
   }
 
-  startLoad() {
-    this.threads.forEach(function (process) {
-      process.send({
-        type: 'load'
-      });
-    });
+  sendToThreads(type, data) {
+    this.threads.forEach(this.sendToProcess(type, data));
+  }
+
+  sendToProcess(type, data) {
+    var command = _.defaults({type, data}, {data: null});
+
+    return (process) => process.send(command);
   }
 }
 
