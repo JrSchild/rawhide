@@ -2,7 +2,6 @@
 
 var Workload = require('../core/Workload.js');
 var _ = require('lodash');
-var faker = require('faker');
 
 class BasicWorkload extends Workload {
   load(done) {
@@ -17,8 +16,18 @@ class BasicWorkload extends Workload {
     return this.model.READ(metric);
   }
 
+  // Return some dummy data generated with faker.js.
   generateData() {
-  	return _.pick(faker.helpers.createCard(), 'name', 'username', 'email', 'address', 'phone', 'company');
+    return {
+      name: "Destany Hayes",
+      username: "Ellis_Funk81",
+      email: "Mallory.Swaniawski14@gmail.com",
+      address: {
+        streetA: "Bartoletti Trail",
+        streetB: "1954 Purdy Union",
+        streetC: "900 Merritt Locks Suite 611"
+      }
+    };
   }
 }
 
