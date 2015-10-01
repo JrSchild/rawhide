@@ -2,7 +2,7 @@
 
 var _ = require('lodash');
 var PIDController = require('./PIDController.js');
-var settings = require('../settings.json').throughput;
+var settings = require('../settings.json');
 var getOpsPerSecInRange;
 
 /**

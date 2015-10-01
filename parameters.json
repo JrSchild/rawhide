@@ -1,20 +1,20 @@
 {
   "database": "MongoDB",
-  "loadRecords": 5e5,
+  "loadRecords": 1e5,
   "cleanupAutomatically": false,
-  "skipLoadingPhase": true,
+  "skipLoadingPhase": false,
   "threads": [
     {
       "workload": "BasicWorkload",
       "model": "BasicModel",
       "tableName": "table",
       "fieldCount": 10,
-      "multiply": 4,
+      "multiply": 2,
       "proportions": {
-        "WRITE": 0.4,
-        "READ": 0.6
+        "WRITE": 0.999,
+        "READ": 0.001
       },
-      "operations": 1e6
+      "runOperations": 1e5
     }
   ]
 }

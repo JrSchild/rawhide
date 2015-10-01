@@ -3,10 +3,9 @@
 var Adapter = require('../core/Adapter.js');
 
 class MongoDBBasicAdapter extends Adapter {
-  WRITE(data, metric) {}
   READ(metric) {}
 
-  LOAD_WRITE(data, done) {
+  WRITE(data, done) {
     var start = Date.now();
 
     this.db.collection(this.parameters.thread.tableName)
@@ -14,6 +13,19 @@ class MongoDBBasicAdapter extends Adapter {
         this.model.setLatency(Date.now() - start);
         done(err);
       });
+  }
+
+  READ(done) {
+    var start = Date.now();
+
+    var cursor = this.db.collection(this.parameters.thread.tableName)
+      .find({});
+
+    cursor.nextObject((err, res) => {
+      cursor.close()
+      this.model.setLatency(Date.now() - start);
+      done(err);
+    });
   }
 
   createTable(cb) {

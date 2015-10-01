@@ -11,12 +11,13 @@ class BasicModel extends Model {
     super(parameters, ADAPTERS);
   }
 
-  LOAD_WRITE(data, done) {
-    this.adapter.LOAD_WRITE(data, done);
+  WRITE(data, done) {
+    this.adapter.WRITE(data, done);
   }
 
-  WRITE(data, metric) {}
-  READ(metric) {}
+  READ(done) {
+    this.adapter.READ(done);
+  }
 }
 
 module.exports = BasicModel;

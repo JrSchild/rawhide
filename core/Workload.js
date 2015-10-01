@@ -2,20 +2,19 @@
 
 var DiscreteGenerator = require('./DiscreteGenerator.js');
 var LimitCounter = require('./LimitCounter.js');
-var settings = require('../settings.json').workload;
+var settings = require('../settings.json');
 
 /**
  * Process Events:
  *   connected       - Database connection successfuly established.
  *   finishedLoading - When the table has been created and the dummy data is inserted.
+ *   finishedRunning - When the workload has finished running.
  */
 class Workload {
   constructor(parameters) {
     this.parameters = parameters;
-    this.operationsPerSecond = settings.operationsPerSecond;
+    this.operationsPerSecond = settings.minOperationsPerSecond;
     this.loadRecords = parameters.settings.loadRecords;
-    this.isLoading = false;
-    this.isLoaded = false;
 
     this.model = new (require(`../models/${parameters.thread.model}.js`))(parameters);
     this.discreteGenerator = new DiscreteGenerator(parameters.thread.proportions);
@@ -30,27 +29,37 @@ class Workload {
   destructor() {}
 
   executeLoad() {
-    if (this.isLoading) return;
-    console.log('start loading phase');
-
-    this.isLoading = true;
-    this.startLoadTime = Date.now();
-    this.counter = new LimitCounter(this.parameters.settings.loadRecords, (err) => {
-      this.isLoading = false;
-      this.isLoaded = true;
-
-      var end = Date.now() - this.startLoadTime;
-      console.log('finished loading', ~~(end / 1000) + 's', `(${end})ms`);
-      process.send({
-        type: 'finishedLoading'
-      });
-    });
-    this.loadingInterval = setInterval(this.loadSecond.bind(this), 1000);
+    this.execute('Loading', this.parameters.settings.loadRecords, () => this.load(this.counter.add()));
   }
 
-  executeRun() {}
+  executeRun() {
+    this.execute('Running', this.parameters.thread.runOperations, () => {
+      this[this.discreteGenerator.next](this.counter.add())
+    });
+  }
 
-  loadSecond() {
+  execute(name, operations, operationMethod) {
+    if (this[`is${name}`] || this.isBusy) return;
+    console.log(`Start ${name} phase.`);
+
+    this.isBusy = true;
+    this[`is${name}`] = true;
+    this[`start${name}Time`] = Date.now();
+    this.operationsPerSecond = settings.operationsPerSecond;
+    this.counter = new LimitCounter(operations, (err) => {
+      this[`is${name}`] = false;
+      this.isBusy = false;
+
+      var end = Date.now() - this[`start${name}Time`];
+      console.log(`finished ${name}`, ~~(end / 1000) + 's', `(${end})ms`);
+      process.send({
+        type: `finished${name}`
+      });
+    });
+    this.loadingInterval = setInterval(this.runSecond.bind(this, operationMethod), 1000);
+  }
+
+  runSecond(operationMethod) {
     var interval = 1000 / settings.loadSplit;
     var opsPerInterval = ~~(this.operationsPerSecond / settings.loadSplit);
 
@@ -61,9 +70,7 @@ class Workload {
     // Divide the operations per second over `settings.loadSplit` number of intervals.
     for (let i = 0; i < settings.loadSplit; i++) {
       setTimeout(() => {
-        for (let l = opsPerInterval; l-- && !this.counter.isLimit;) {
-          this.load(this.counter.add());
-        };
+        for (let l = opsPerInterval; l-- && !this.counter.isLimit;) operationMethod();
       }, i * interval);
     }
   }

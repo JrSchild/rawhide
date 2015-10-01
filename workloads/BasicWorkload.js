@@ -3,31 +3,29 @@
 var Workload = require('../core/Workload.js');
 var _ = require('lodash');
 
+// Define some dummy data generated with faker.js.
+const dummyData = {
+  name: "Destany Hayes",
+  username: "Ellis_Funk81",
+  email: "Mallory.Swaniawski14@gmail.com",
+  address: {
+    streetA: "Bartoletti Trail",
+    streetB: "1954 Purdy Union",
+    streetC: "900 Merritt Locks Suite 611"
+  }
+};
+
 class BasicWorkload extends Workload {
   load(done) {
-    this.model.LOAD_WRITE(this.generateData(), done);
+    this.WRITE(done);
   }
 
-  WRITE(metric) {
-    return this.model.WRITE(this.generateData(), metric);
+  WRITE(done) {
+    this.model.WRITE(_.cloneDeep(dummyData), done);
   }
 
-  READ(metric) {
-    return this.model.READ(metric);
-  }
-
-  // Return some dummy data generated with faker.js.
-  generateData() {
-    return {
-      name: "Destany Hayes",
-      username: "Ellis_Funk81",
-      email: "Mallory.Swaniawski14@gmail.com",
-      address: {
-        streetA: "Bartoletti Trail",
-        streetB: "1954 Purdy Union",
-        streetC: "900 Merritt Locks Suite 611"
-      }
-    };
+  READ(done) {
+    this.model.READ(done);
   }
 }
 

@@ -1,4 +1,4 @@
-var workload, methods;
+var methods, workload;
 
 methods = {
   init: function (message) {
