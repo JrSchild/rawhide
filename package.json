@@ -9,6 +9,8 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "blessed": "^0.1.81",
+    "blessed-contrib": "^2.3.3",
     "bluebird": "^2.10.1",
     "lodash": "^3.10.1",
     "mongodb": "^2.0.44"
