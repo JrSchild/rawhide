@@ -25,6 +25,7 @@ Rawhide should retrieve the following metrics:
 #### TODO
 - Design the model and adapter in such a way that the model can be omitted.
 	- Connecting should go through the adapter rather than the model.
+	- Adapter should be instantiated on Workload rather than on model.
 - Imporove error handling and graceful shutdown.
 
 #### Wishlist
