@@ -31,7 +31,7 @@ class Spawner {
   spawnThread(thread) {
     var resolverConnected = Promise.pending();
     var resolverLoaded = Promise.pending();
-    var process = fork(path.resolve(__dirname, '../client.js'));
+    var process = fork(path.resolve(__dirname, '../worker.js'));
 
     // TODO: Imporove error handling.
     process.on('error', (error) => {});
