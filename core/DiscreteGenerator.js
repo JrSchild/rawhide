@@ -1,51 +1,48 @@
 "use strict"
 
+var _ = require('lodash');
+
 /**
  * A class that discretely divides the load over the given names with the given
  * proportions. The total proportions do not necessarily have to add up to one.
  * Usage:
  * van discrete = new DiscreteGenerator({
  *   WRITE: 0.6,
- *   READ: 0.4
+ *   READ: 0.3
  * });
  */
 class DiscreteGenerator {
   constructor(proportions) {
-
-    // Values are a list of arrays: [name, proportion]
-    this.values = [];
-    this.valuesLength = 0;
-
-    // Sum the total of all proportions to calculate aspect ratio.
-    this.sum = 0;
-
-    this.addValues(proportions);
+    this.values = DiscreteGenerator.createValues(proportions);
+    this.current = -1;
   }
 
   get next() {
-    var divider = Math.random();
-
-    for (var i = 0, l = this.valuesLength; i < l; i++) {
-      let proportion = this.values[i][1] / this.sum;
-
-      if (divider < proportion) {
-        return this.values[i][0];
-      }
-
-      divider -= proportion;
-    }
-
-    throw new Error('ThisShouldNotBeExecutedError');
+    return this.values[++this.current] || this.values[this.current = 0];
   }
 
-  add(name, proportion) {
-    this.values.push([name, proportion]);
-    this.sum += proportion;
-    this.valuesLength++;
-  }
+  /**
+   * Create an array where each key has the
+   * number of occurences after its ratio.
+   */
+  static createValues(proportions) {
+    var POW, split;
 
-  addValues(values) {
-    Object.keys(values).forEach((key) => this.add(key, values[key]));
+    // Find the most amount of numbers behind the comma.
+    POW = _.reduce(proportions, (POW, value) => {
+      split = `${value}`.split('.')[1] || [];
+
+      return Math.max(split.length, POW);
+    }, 0);
+    POW = Math.pow(10, POW);
+
+    // Construct an array where we are sure each number is a full integer.
+    // Shuffle them around on each iteration and return the array.
+    return _.reduce(proportions, (result, value, key) => {
+      value = _.fill(Array(value * POW), key);
+
+      return _.shuffle(result.concat(value));
+    }, []);
   }
 }
 
