@@ -3,6 +3,7 @@
   "loadRecords": 1e5,
   "cleanupAutomatically": false,
   "skipLoadingPhase": false,
+  "loadType": "maxFullBlaf",
   "threads": [
     {
       "workload": "BasicWorkload",
@@ -11,10 +12,10 @@
       "fieldCount": 10,
       "multiply": 2,
       "proportions": {
-        "WRITE": 0.999,
-        "READ": 0.001
+        "WRITE": 0.99,
+        "READ": 0.01
       },
-      "runOperations": 1e5
+      "runOperations": 1e6
     }
   ]
 }

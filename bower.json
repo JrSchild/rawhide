@@ -1,0 +1,19 @@
+{
+  "name": "Rawhide",
+  "main": "index.js",
+  "version": "0.0.1",
+  "homepage": "https://github.com/JrSchild/Rawhide",
+  "authors": [
+    "Joram Ruitenschild"
+  ],
+  "description": "A highly extensible, Node.js powered database testing framework.",
+  "moduleType": [],
+  "license": "MIT",
+  "private": true,
+  "ignore": [],
+  "dependencies": {
+    "highcharts": "~4.1.8",
+    "bootstrap": "~3.3.5",
+    "socket.io": "~1.3.7"
+  }
+}
