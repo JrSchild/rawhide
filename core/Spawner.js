@@ -27,7 +27,10 @@ class Spawner {
     Promise.all(this.threadsLoaded).then(() => console.log('All threads are loaded.'));
 
     Promise.all(this.threadsConnected).then(() => this.sendToThreads(!this.settings.skipLoadingPhase ? 'load' : 'run'));
-    Promise.all(this.threadsLoaded).then(() => !this.settings.skipLoadingPhase && this.sendToThreads('run'));
+    Promise.all(this.threadsLoaded).then(() => {
+      this.throughputController.reset();
+      !this.settings.skipLoadingPhase && this.sendToThreads('run');
+    });
 
     return true;
   }

@@ -10,10 +10,10 @@
       "model": "BasicModel",
       "tableName": "table",
       "fieldCount": 10,
-      "multiply": 2,
+      "multiply": 7,
       "proportions": {
         "WRITE": 0.99,
-        "READ": 0.01
+        "READ": 0.00
       },
       "runOperations": 1e6
     }

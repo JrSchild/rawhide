@@ -1,8 +1,11 @@
 {
   "targetLatency": 2000,
-  "maxOperationsPerSecond": 120000,
+  "maxOperationsPerSecond": 200000,
   "minOperationsPerSecond": 1000,
   "PIDInterval": 3000,
+  "updateLatencyInterval": 100,
+  "stepInterval": 20000,
+  "stepDeltaOperationsPerSecond": 200,
   "throughtputMode": false,
   "operationsPerSecond": 10,
   "tableName": "table",

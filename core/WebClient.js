@@ -25,10 +25,12 @@ class WebClient {
 
     this.io = socket.listen(this.server);
 
-    this.spawner.threads.forEach((thread) => {
-      console.log(thread);
+    this.spawner.throughputController.on('latency', (latency) => {
+      this.io.sockets.emit('latency', latency);
     });
-    this.io.sockets.emit('message', {blaat: 'hi'});
+    this.spawner.throughputController.on('operationsPerSecond', (operationsPerSecond) => {
+      this.io.sockets.emit('operationsPerSecond', [Date.now(), operationsPerSecond]);
+    });
   }
 }
 
