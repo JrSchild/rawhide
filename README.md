@@ -32,6 +32,9 @@ Rawhide should retrieve the following metrics:
 	- Connecting should go through the adapter rather than the model.
 	- Adapter should be instantiated on Workload rather than on model.
 - Imporove error handling and graceful shutdown.
+- Create an awesome way of statistics collecting.
+- There seems to be a memory leak in the client child-processes.
+- Dockerize the databases and automate startup/shutdown/etc... through API.
 
 #### Wishlist
 - Most awesome way for this to work is use `npm install -g rawhide` to install the framework.
