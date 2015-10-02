@@ -1,6 +1,6 @@
 var expect = require("chai").expect;
 var _ = require('lodash');
-var DiscreteGenerator = require('../core/DiscreteGenerator.js');
+var DiscreteGenerator = require('../core/DiscreteGenerator');
 
 describe('Discrete Generator', () => {
   var discreteGenerator1, discreteGenerator2;

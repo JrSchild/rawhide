@@ -2,7 +2,7 @@ var methods, workload;
 
 methods = {
   init: function (message) {
-    workload = workload || new (require(`./workloads/${message.data.thread.workload}.js`))(message.data);
+    workload = workload || new (require(`./workloads/${message.data.thread.workload}`))(message.data);
   },
   load: function () {
     workload && workload.executeLoad();

@@ -4,7 +4,7 @@ var fork = require('child_process').fork;
 var path = require('path');
 var _ = require('lodash');
 var Promise = require('bluebird');
-var ThroughputController = require('./ThroughputController.js');
+var ThroughputController = require('./ThroughputController');
 
 class Spawner {
   constructor(settings) {

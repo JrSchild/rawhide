@@ -1,7 +1,7 @@
 "use strict"
 
-var DiscreteGenerator = require('./DiscreteGenerator.js');
-var LimitCounter = require('./LimitCounter.js');
+var DiscreteGenerator = require('./DiscreteGenerator');
+var LimitCounter = require('./LimitCounter');
 var settings = require('../settings.json');
 
 /**

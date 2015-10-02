@@ -1,6 +1,6 @@
 "use strict"
 
-var Workload = require('../core/Workload.js');
+var Workload = require('../core/Workload');
 var _ = require('lodash');
 
 // Define some dummy data generated with faker.js.

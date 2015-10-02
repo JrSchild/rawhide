@@ -1,7 +1,7 @@
 "use strict"
 
 var _ = require('lodash');
-var PIDController = require('./PIDController.js');
+var PIDController = require('./PIDController');
 var settings = require('../settings.json');
 var getOpsPerSecInRange;
 

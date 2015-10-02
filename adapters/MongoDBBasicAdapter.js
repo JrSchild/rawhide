@@ -1,6 +1,6 @@
 "use strict"
 
-var Adapter = require('../core/Adapter.js');
+var Adapter = require('../core/Adapter');
 
 class MongoDBBasicAdapter extends Adapter {
   READ(metric) {}
