@@ -39,7 +39,7 @@ class DiscreteGenerator {
     // Construct an array where we are sure each number is a full integer.
     // Shuffle them around on each iteration and return the array.
     return _.reduce(proportions, (result, value, key) => {
-      value = _.fill(Array(value * POW), key);
+      value = Array(value * POW).fill(key);
 
       return _.shuffle(result.concat(value));
     }, []);
