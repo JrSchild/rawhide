@@ -79,7 +79,7 @@ socket.on('latency', function (latency) {
   latencyBuffer.push(latency);
 });
 socket.on('operationsPerSecond', function (operationsPerSecond) {
-  operationsPerSecond[1] = Math.max(0, operationsPerSecond[1]);
+  operationsPerSecond[1] = Math.max(0, Math.round(operationsPerSecond[1]));
   operationsPerSecondBuffer.push(operationsPerSecond);
 });
 
