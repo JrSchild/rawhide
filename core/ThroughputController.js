@@ -10,6 +10,10 @@ var getOpsPerSecInRange;
  * This class is used to control the number of operations per second
  * for all threads. The algorithm adjusts the throughput towards the
  * goalLatency and emits the new number of operations per second.
+ *
+ * Depending on the settings, this class should either try to find the
+ * maximum throughput automatically (through PID algorithm), or
+ * incrementally use steps to increase the throughput over time.
  */
 class ThroughputController extends EventEmitter {
   constructor(threads) {

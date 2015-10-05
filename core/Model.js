@@ -1,5 +1,7 @@
 "use strict"
 
+var Promise = require('bluebird');
+
 /**
  * Class that transforms incoming data and passes it through to the adapter.
  * This is used to benchmark the impact of data that needs to be processed
@@ -13,23 +15,27 @@ class Model {
   }
 
   connect() {
+    var connect, createTable;
+
     if (!this.adapters[this.parameters.settings.database]) {
       throw new Error('AdapterNotSetError');
     }
 
     // TODO: Move to adapter and use Promises/generators...?
     this.adapter = new (require(`../adapters/${this.adapters[this.parameters.settings.database]}.js`))(this);
-    this.adapter.connect((err) => {
-      if (err) throw err;
 
-      this.adapter.createTable((err) => {
-        if (err) throw err;
+    connect = Promise.promisify(this.adapter.connect).bind(this.adapter);
+    createTable = Promise.promisify(this.adapter.createTable).bind(this.adapter);
 
-        process.send({
-          type: 'connected'
-        });
-      });
-    });
+    connect()
+      .then(() => createTable())
+      .then(() => process.send({
+        type: 'connected'
+      }))
+      .catch((err) => process.send({
+        type: 'errorConnecting',
+        data: err
+      }));
   }
 
   // This will be replaced by smarter/better methods for metrics handling/collecting.
