@@ -56,21 +56,30 @@ class Workload {
         type: `finished${name}`
       });
     });
+    this.emitCounterInterval = setInterval(() => {
+      process.send({
+        type: 'counterState',
+        pid: process.pid,
+        data: this.counter.prepCurrent - this.counter.current
+      });
+    }, 500);
     this.loadingInterval = setInterval(this.runSecond.bind(this, operationMethod), 1000);
   }
 
   runSecond(operationMethod) {
+    console.log(`this.operationsPerSecond ${this.operationsPerSecond}`);
     var interval = 1000 / settings.loadSplit;
     var opsPerInterval = ~~(this.operationsPerSecond / settings.loadSplit);
 
     if (this.counter.isLimit) {
+      clearInterval(this.emitCounterInterval);
       return clearInterval(this.loadingInterval);
     }
 
     // Divide the operations per second over `settings.loadSplit` number of intervals.
     for (let i = 0; i < settings.loadSplit; i++) {
       setTimeout(() => {
-        for (let l = opsPerInterval; l-- && !this.counter.isLimit;) operationMethod();
+        for (let l = opsPerInterval; l-- > 0 && !this.counter.isLimit && this.counter.inQueue < settings.queueLimit;) operationMethod();
       }, i * interval);
     }
   }

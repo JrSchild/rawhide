@@ -2,6 +2,7 @@
 
 var express = require('express');
 var socket = require('socket.io');
+var _ = require('lodash');
 
 /**
  * Creates an epxress app and pipes through data realtime to the browser.
@@ -31,6 +32,19 @@ class WebClient {
     this.spawner.throughputController.on('operationsPerSecond', (operationsPerSecond) => {
       this.io.sockets.emit('operationsPerSecond', [Date.now(), operationsPerSecond]);
     });
+
+    this.threadsCounterStates = {};
+    this.spawner.threads.forEach((thread) => {
+      thread.on('message', (message) => {
+        if (message.type === 'counterState') {
+          this.threadsCounterStates[message.pid] = message.data;
+        }
+      });
+    });
+
+    setInterval(() => {
+      this.io.sockets.emit('counterState', [Date.now(), _.sum(this.threadsCounterStates)]);
+    }, 600);
   }
 }
 

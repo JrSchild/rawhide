@@ -32,6 +32,10 @@ class LimitCounter {
     return this.current >= this.limit;
   }
 
+  get inQueue() {
+    return this.prepCurrent - this.current;
+  }
+
   add(number) {
     number = number || 1
     this.prepCurrent += number;

@@ -78,9 +78,22 @@ socket.on('latency', function (latency) {
   latency[1] = Math.round(latency[1]);
   latencyBuffer.push(latency);
 });
+
+var last;
 socket.on('operationsPerSecond', function (operationsPerSecond) {
   operationsPerSecond[1] = Math.max(0, Math.round(operationsPerSecond[1]));
+  if (last) {
+    operationsPerSecondBuffer.push([operationsPerSecond[0] - 1, last]);
+  }
+
   operationsPerSecondBuffer.push(operationsPerSecond);
+  last = operationsPerSecond[1];
+});
+
+socket.on('counterState', function (counterState) {
+  if (started) {
+    console.log(counterState[0], counterState[1]);
+  }
 });
 
 setInterval(function () {

@@ -57,9 +57,6 @@ class ThroughputController extends EventEmitter {
       // If average is 0 or NaN (in case length is 0) the threads haven't started yet, so keep it unchanged.
       currentLatency = (_.sum(this.latencies) / this.latencies.length);
 
-      if (currentLatency > 15000) {
-        // console.log(this.latencies);
-      }
       // Start fresh on next iteration.
       this.latencies = [];
 
@@ -70,7 +67,6 @@ class ThroughputController extends EventEmitter {
       this.currentLatency = currentLatency;
 
       // Let everybody know.
-      // console.log(this.currentLatency);
       this.emit('latency', [Date.now(), this.currentLatency]);
     }, settings.updateLatencyInterval);
 
@@ -115,7 +111,6 @@ getOpsPerSecInRange = () => {
   var min = settings.minOperationsPerSecond;
   var max = settings.maxOperationsPerSecond;
 
-  return (value) => Math.min(max, value);
   return (value) => Math.min(max, Math.max(min, value));
 }();
 

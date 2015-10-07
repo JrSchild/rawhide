@@ -1,8 +1,9 @@
 {
-  "targetLatency": 2000,
+  "targetLatency": 500,
   "maxOperationsPerSecond": 200000,
-  "minOperationsPerSecond": 1000,
-  "PIDInterval": 3000,
+  "minOperationsPerSecond": 0,
+  "queueLimit": 5000,
+  "PIDInterval": 300,
   "updateLatencyInterval": 100,
   "stepInterval": 20000,
   "stepDeltaOperationsPerSecond": 200,
