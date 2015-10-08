@@ -4,7 +4,6 @@ var EventEmitter = require('events');
 var _ = require('lodash');
 var PIDController = require('./PIDController');
 var settings = require('../settings.json');
-var getOpsPerSecInRange;
 
 /**
  * This class is used to control the number of operations per second
@@ -92,7 +91,7 @@ class ThroughputController extends EventEmitter {
       }
 
       // Update operationsPerSecond, make sure its between min and max value and send out data.
-      this.operationsPerSecond = getOpsPerSecInRange(this.operationsPerSecond + correction);
+      this.operationsPerSecond = ThroughputController.getOpsPerSecInRange(this.operationsPerSecond + correction);
       this.emitOperationsPerSecond();
 
       console.log(`latency: ${this.currentLatency}, correction: ${correction > 0 ? '+' : ''}${correction}, opsPSec: ${this.operationsPerSecond}`);
@@ -111,18 +110,18 @@ class ThroughputController extends EventEmitter {
       data: this.operationsPerSecond / this.threads.length
     }));
   }
+
+  /**
+   * Get the operations per seconds but makes sure they are
+   * in the range of min and max operations per second.
+   * Caches the min, max values.
+   */
+  static getOpsPerSecInRange(value) {
+    var max = settings.maxOperationsPerSecond;
+    var min = settings.minOperationsPerSecond;
+
+    return Math.min(max, Math.max(min, value));
+  }
 }
-
-/**
- * Get the operations per seconds but makes sure they are
- * in the range of min and max operations per second.
- * Caches the min, max values.
- */
-getOpsPerSecInRange = () => {
-  var min = settings.minOperationsPerSecond;
-  var max = settings.maxOperationsPerSecond;
-
-  return (value) => Math.min(max, Math.max(min, value));
-}();
 
 module.exports = ThroughputController;
