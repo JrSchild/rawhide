@@ -24,7 +24,7 @@ class ThroughputController extends EventEmitter {
   }
 
   reset() {
-    this.currentLatency = 0;
+    this.currentLatency = null;
     this.operationsPerSecond = settings.minOperationsPerSecond;
     this.latencies = [];
     clearInterval(this.latencyUpdater);
@@ -48,37 +48,48 @@ class ThroughputController extends EventEmitter {
    * with a PID Controller to approach targetLatency.
    */
   initThroughputEmitter() {
-    this.pid = new PIDController(0.01, 0.1, 0.01);
+    this.pid = new PIDController(0.2, 0, 0.23);
     this.pid.setTarget(settings.targetLatency);
 
     this.latencyUpdater = setInterval(() => {
-      var currentLatency;
 
-      // If average is 0 or NaN (in case length is 0) the threads haven't started yet, so keep it unchanged.
-      currentLatency = (_.sum(this.latencies) / this.latencies.length);
+      // If no latencies are recieved and currentLatency has not been set yet. Stop right here.
+      if (!this.latencies.length) {
+        if (_.isNull(this.currentLatency)) {
+          return;
+        }
 
-      // Start fresh on next iteration.
-      this.latencies = [];
+        // Otherwise set it to zero.
+        this.currentLatency = 0;
+      } else {
 
-      if (!currentLatency) {
-        return;
+        // If average is 0 or NaN (in case length is 0) the threads haven't started yet, so keep it unchanged.
+        this.currentLatency = (_.sum(this.latencies) / this.latencies.length);
+
+        // Start fresh on next iteration.
+        this.latencies = [];
       }
 
-      this.currentLatency = currentLatency;
-
-      // Let everybody know.
+      // Let everybody know through EventEmitter.
       this.emit('latency', [Date.now(), this.currentLatency]);
     }, settings.updateLatencyInterval);
 
     this.opsPerSecUpdater = setInterval(() => {
       var correction;
 
-      if (!this.currentLatency) {
+      if (_.isNull(this.currentLatency)) {
         return;
       }
 
       // Use PID algorithm to calculate correction.
       correction = this.pid.update(this.currentLatency);
+
+      // If the latency is 0 and the opsPerSecond go into the minus, reset the PID and recalculate the correction.
+      if (this.currentLatency === 0 && this.operationsPerSecond + correction < 0) {
+        this.pid.reset();
+
+        correction = this.pid.update(this.currentLatency);
+      }
 
       // Update operationsPerSecond, make sure its between min and max value and send out data.
       this.operationsPerSecond = getOpsPerSecInRange(this.operationsPerSecond + correction);

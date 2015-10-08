@@ -2,7 +2,7 @@
   "database": "MongoDB",
   "loadRecords": 1e5,
   "cleanupAutomatically": false,
-  "skipLoadingPhase": false,
+  "skipLoadingPhase": true,
   "loadType": "maxFullBlaf",
   "threads": [
     {

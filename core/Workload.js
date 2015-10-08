@@ -67,7 +67,6 @@ class Workload {
   }
 
   runSecond(operationMethod) {
-    console.log(`this.operationsPerSecond ${this.operationsPerSecond}`);
     var interval = 1000 / settings.loadSplit;
     var opsPerInterval = ~~(this.operationsPerSecond / settings.loadSplit);
 
