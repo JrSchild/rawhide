@@ -3,7 +3,7 @@
 var _ = require('lodash');
 var settings = require('../settings.json');
 var ThroughputController = require('./ThroughputController');
-var LimitQueue = require('./LimitQueue');
+var PhaseControl = require('./PhaseControl');
 
 /**
  * Increase the operations per second linearly until the latency freaks out.
@@ -48,12 +48,64 @@ class ThroughtputControllerSteps extends ThroughputController {
     }, settings.updateLatencyInterval);
 
     var runResults = [];
-    var waitForZeroLatency, cooldown;
-    var phases = [
+    var steps = [
       {correction: 1000, opsDecr: 0.60},
       {correction: 300, opsDecr: 0.75},
       {correction: 10, opsDecr: 0.98}
     ];
+
+    var phases = new PhaseControl('active');
+
+    phases.add('active', {
+      condition: () => {
+        console.log(this.currentLatency);
+        if (this.currentLatency > 2000) {
+          if (steps[runResults.length]) {
+            runResults.push(this.operationsPerSecond);
+          }
+
+          console.log('start waitForZeroLatency');
+          return 'waitForZeroLatency';
+        }
+      },
+      correction: () => steps[runResults.length] ? steps[runResults.length].correction : 0
+    });
+
+    phases.add('waitForZeroLatency', {
+      condition: () => {
+        if (this.currentLatency === 0) {
+          this.cooldownTime = Date.now() + 3000;
+          console.log('start cooldown');
+          return 'cooldown';
+        }
+      },
+      correction: () => -this.operationsPerSecond
+    });
+
+    phases.add('cooldown', {
+      condition: () => {
+        if (this.cooldownTime < Date.now()) {
+          if (_.last(runResults)) {
+            this.operationsPerSecond = _.last(runResults) * _.last(steps).opsDecr;
+          } else {
+            this.operationsPerSecond = 0;
+          }
+
+          console.log('start active');
+          return 'active';
+        }
+      },
+      correction: () => -this.operationsPerSecond
+    });
+
+    phases.add('spike', {
+      condition: () => {},
+      correction: () => {}
+    });
+    phases.add('verify', {
+      condition: () => {},
+      correction: () => {}
+    });
 
     this.opsPerSecUpdater = setInterval(() => {
       var correction;
@@ -62,42 +114,7 @@ class ThroughtputControllerSteps extends ThroughputController {
         return;
       }
 
-      if (waitForZeroLatency && this.currentLatency === 0) {
-        console.log('start cooldown');
-        waitForZeroLatency = false;
-        cooldown = Date.now() + 3000;
-      }
-
-      if (cooldown && cooldown < Date.now()) {
-        console.log('end cooldown');
-        cooldown = false;
-        if (runResults[runResults.length - 1]) {
-          this.operationsPerSecond = runResults[runResults.length - 1] * phases[runResults.length - 1].opsDecr;
-          console.log(`New opsPSec: ${this.operationsPerSecond} (${phases[runResults.length - 1].opsDecr})`);
-        } else {
-          this.operationsPerSecond = 0;
-        }
-      }
-
-      correction = -this.operationsPerSecond;
-
-      if (!waitForZeroLatency && !cooldown) {
-        if (this.currentLatency > 2000) {
-          waitForZeroLatency = true;
-          console.log(`start wait-for-zero-latency, current opsPSec: ${this.operationsPerSecond}`);
-
-          if (phases[runResults.length]) {
-            runResults.push(this.operationsPerSecond);
-          }
-        } else if (phases[runResults.length]) {
-          correction = phases[runResults.length].correction;
-        } else {
-          console.log(`FINISHED ${this.operationsPerSecond}`);
-          correction = 0;
-        }
-      }
-
-      correction = 1000;
+      correction = phases.next();
 
       // Update operationsPerSecond, make sure its between min and max value and send out data.
       this.operationsPerSecond = ThroughputController.getOpsPerSecInRange(this.operationsPerSecond + correction);
