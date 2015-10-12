@@ -3,4 +3,6 @@ var WebClient = require('./core/WebClient');
 var parameters = require('./parameters.json');
 
 var spawner = new Spawner(parameters);
-var webClient = new WebClient(spawner);
+spawner.connect()
+  .then(() => new WebClient(spawner))
+  .catch((err) => {/** TODO **/});

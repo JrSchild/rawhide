@@ -12,8 +12,6 @@ class Spawner {
     this.threads = [];
     this.threadsConnected = [];
     this.threadsLoaded = [];
-    this.spawnThreads();
-    this.throughputController = new ThroughputController(this.threads);
   }
 
   start() {
@@ -79,6 +77,18 @@ class Spawner {
     var command = _.defaults({type, data}, {data: null});
 
     return (process) => process.send(command);
+  }
+
+  connect() {
+    return this.startDatabase().then((docker) => {
+      this.settings.docker = docker;
+      this.spawnThreads();
+      this.throughputController = new ThroughputController(this.threads);
+    });
+  }
+
+  startDatabase() {
+    return require(`../databases/${this.settings.database}.js`).setUp();
   }
 }
 

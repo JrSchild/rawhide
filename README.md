@@ -9,6 +9,9 @@ A Node.js powered database testing framework. It is slightly based on the YCSB b
 #### Usage
 To better test the maximum load on the database, each database should be run in a Docker container. The database will run in it's own virtual environment so the resources can be limited. The other upside of this is that the testframework can start and kill each database through an API.
 
+Mac OS X
+Make sure your docker environment variables are set properly. Run `docker-machine env {machine-name}` and add the exports values to `~/.bash_profile`. Run `source ~/bash_profile` to reload the variables.
+
 #### Classes
 Spawner: Spawns workload threads and collects metrics.  
 Workload: Generates data and passes it to the model/adapter.   
