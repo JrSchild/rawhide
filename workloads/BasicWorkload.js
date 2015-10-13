@@ -1,4 +1,4 @@
-"use strict"
+'use strict'
 
 var Workload = require('../core/Workload');
 var _ = require('lodash');

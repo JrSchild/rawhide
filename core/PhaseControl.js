@@ -1,4 +1,4 @@
-"use strict"
+'use strict'
 
 /**
  * Class that controls the current phase and when it needs to go the next.

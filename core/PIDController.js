@@ -1,4 +1,4 @@
-"use strict"
+'use strict'
 
 /** 
  *  PID Controller. Copied from github:Philmod/node-pid-controller and transformed to ES6.

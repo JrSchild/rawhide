@@ -1,4 +1,4 @@
-"use strict"
+'use strict'
 
 var EventEmitter = require('events');
 var _ = require('lodash');
