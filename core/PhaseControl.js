@@ -18,7 +18,7 @@ class PhaseControl {
     var newPhase;
 
     if (!(newPhase = this.phases[this.currentPhase].condition())) {
-      return this.phases[this.currentPhase].correction();
+      return this.phases[this.currentPhase].correction() || 0;
     }
 
     this.currentPhase = newPhase;

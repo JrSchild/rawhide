@@ -58,14 +58,14 @@ class ThroughtputControllerSteps extends ThroughputController {
 
     phases.add('active', {
       condition: () => {
-        console.log(this.currentLatency);
-        if (this.currentLatency > 2000) {
+        if (this.currentLatency > 800) {
           if (steps[runResults.length]) {
             runResults.push(this.operationsPerSecond);
           }
 
-          console.log('start waitForZeroLatency');
-          return 'waitForZeroLatency';
+          this.spikeTime = Date.now() + 20000;
+          console.log('begin spiketime', Date.now());
+          return 'spike';
         }
       },
       correction: () => steps[runResults.length] ? steps[runResults.length].correction : 0
@@ -75,7 +75,7 @@ class ThroughtputControllerSteps extends ThroughputController {
       condition: () => {
         if (this.currentLatency === 0) {
           this.cooldownTime = Date.now() + 3000;
-          console.log('start cooldown');
+
           return 'cooldown';
         }
       },
@@ -86,12 +86,12 @@ class ThroughtputControllerSteps extends ThroughputController {
       condition: () => {
         if (this.cooldownTime < Date.now()) {
           if (_.last(runResults)) {
-            this.operationsPerSecond = _.last(runResults) * _.last(steps).opsDecr;
+            this.operationsPerSecond = _.last(runResults) * steps[runResults.length - 1].opsDecr;
           } else {
             this.operationsPerSecond = 0;
           }
+          console.log(_.last(runResults), this.operationsPerSecond);
 
-          console.log('start active');
           return 'active';
         }
       },
@@ -99,8 +99,22 @@ class ThroughtputControllerSteps extends ThroughputController {
     });
 
     phases.add('spike', {
-      condition: () => {},
-      correction: () => {}
+      condition: () => {
+        if (this.currentLatency < 500) {
+          runResults.pop();
+          this.spikeTime = null;
+
+          console.log('end spiketime back active', Date.now());
+          return 'active';
+        }
+
+        if (this.spikeTime < Date.now()) {
+          console.log('end spiketime to waitForZeroLatency', Date.now());
+          this.spikeTime = null;
+          return 'waitForZeroLatency';
+        }
+      },
+      correction: () => 0
     });
     phases.add('verify', {
       condition: () => {},
