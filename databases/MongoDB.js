@@ -49,7 +49,9 @@ class MongoDB {
       // Create and start a new mongodb container.
       container = yield Q.ninvoke(docker, 'createContainer', createOptions);
       yield Q.ninvoke(container, 'start', startOptions);
-    }).then(() => docker.modem);
+
+      return docker.modem;
+    });
   }
 
   static tearDown() {
