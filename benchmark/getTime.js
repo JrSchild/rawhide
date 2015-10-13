@@ -1,3 +1,5 @@
+process.chdir('../');
+
 var Benchmark = require('benchmark');
 var microtime = require('microtime');
 
