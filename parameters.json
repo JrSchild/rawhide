@@ -15,7 +15,7 @@
         "WRITE": 0.99,
         "READ": 0.00
       },
-      "runOperations": 1e6
+      "runOperations": 1e8
     }
   ]
 }

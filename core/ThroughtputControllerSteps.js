@@ -60,6 +60,7 @@ class ThroughtputControllerSteps extends ThroughputController {
       condition: () => {
         if (this.currentLatency > 800) {
           if (steps[runResults.length]) {
+            this.operationsPerSecond -= steps[runResults.length].correction;
             runResults.push(this.operationsPerSecond);
           }
 
@@ -68,7 +69,7 @@ class ThroughtputControllerSteps extends ThroughputController {
           return 'spike';
         }
       },
-      correction: () => steps[runResults.length] ? steps[runResults.length].correction : 0
+      correction: () => steps[runResults.length] ? steps[runResults.length].correction : _.last(steps).correction
     });
 
     phases.add('waitForZeroLatency', {
@@ -76,6 +77,7 @@ class ThroughtputControllerSteps extends ThroughputController {
         if (this.currentLatency === 0) {
           this.cooldownTime = Date.now() + 3000;
 
+          console.log('begin cooldown');
           return 'cooldown';
         }
       },
@@ -92,6 +94,7 @@ class ThroughtputControllerSteps extends ThroughputController {
           }
           console.log(_.last(runResults), this.operationsPerSecond);
 
+          console.log('from cooldown to active');
           return 'active';
         }
       },
