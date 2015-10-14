@@ -34,5 +34,5 @@ function createSymlink(from, to) {
   if (fs.existsSync(to)) {
     fs.unlinkSync(to);
   }
-  fs.symlinkSync(from, to, 'junction');
+  fs.symlinkSync(target, to, 'junction');
 }
