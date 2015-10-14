@@ -2,7 +2,7 @@
   "targetLatency": 2000,
   "maxOperationsPerSecond": 200000,
   "minOperationsPerSecond": 0,
-  "queueLimit": 5000,
+  "queueLimit": 2e6,
   "PIDInterval": 2000,
   "updateLatencyInterval": 500,
   "stepInterval": 20000,
