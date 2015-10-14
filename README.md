@@ -38,6 +38,7 @@ Rawhide should retrieve the following metrics:
 - Create an awesome way of statistics collecting.
 - There seems to be a memory leak in the client child-processes.
 - Dockerize the databases and automate startup/shutdown/etc... through API.
+- Make using Docker optional
 
 #### Wishlist
 - Most awesome way for this to work is use `npm install -g rawhide` to install the framework.
