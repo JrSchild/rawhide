@@ -40,7 +40,11 @@ class MongoDB {
 
     // Run a generator to kill the previous mongo instance and start a new one.
     return co(function *() {
-      var containers, container;
+      var containers, container, timeout;
+
+      timeout = setTimeout(() => {
+        throw new Error('Starting Docker timed out. Please reset the docker the environment.');
+      }, 8000);
 
       // Retrieve a list of current containers and kill mongodb.
       containers = yield Q.ninvoke(docker, 'listContainers');
@@ -49,6 +53,8 @@ class MongoDB {
       // Create and start a new mongodb container.
       container = yield Q.ninvoke(docker, 'createContainer', createOptions);
       yield Q.ninvoke(container, 'start', startOptions);
+
+      clearTimeout(timeout);
 
       return docker.modem;
     });
