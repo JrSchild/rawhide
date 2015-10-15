@@ -81,13 +81,22 @@ class Spawner {
     return (process) => process.send(command);
   }
 
-  // This method should become async. Resolve after the
-  // threads are actually connected to the database.
   connect() {
-    this.spawnThreads();
-    this.throughputController = new ThroughputController(this.threads);
+    var promise = Promise.resolve();
 
-    return Promise.resolve();
+    if (this.settings.docker) {
+      promise = this.startDockerContainer();
+    }
+
+    return promise.then((docker) => {
+      this.settings.docker = docker || false;
+      this.spawnThreads();
+      this.throughputController = new ThroughputController(this.threads);
+    });
+  }
+
+  startDockerContainer() {
+    return require(`../databases/${this.settings.database}.js`).setUpDockerContainer();
   }
 }
 
