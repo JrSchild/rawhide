@@ -5,7 +5,7 @@ var co = require('co');
 var _ = require('lodash');
 var MongoClient = require('mongodb').MongoClient;
 var Docker = require('dockerode');
-var settings = require('../database.json').MongoDB;
+var DBSettings = require('../database.json').MongoDB;
 
 const createOptions = {
   Image: 'mongo',
@@ -25,8 +25,13 @@ const startOptions = {
  */
 class MongoDB {
   connect(cb, overwrites) {
-    MongoClient.connect(`mongodb://${this.parameters.settings.docker.host}:${settings.port}/${settings.database}`, (err, db) => {
-      cb && cb(err, this.db = db);
+    var host = this.parameters.settings.docker ? this.parameters.settings.docker.host : DBSettings.host;
+
+    MongoClient.connect(`mongodb://${host}:${DBSettings.port}/${DBSettings.database}`, (err, db) => {
+      if (err) return cb && cb(err);
+
+      db.on('close', (error) => console.error(`Connection to db closed! ${error}`))
+      cb && cb(null, this.db = db);
     });
   }
 
@@ -35,16 +40,16 @@ class MongoDB {
   getDiskSize() {}
 
   // Methods to start and destroy the database docker container.
-  static setUp() {
-    var docker = new Docker();
+  static setUpDockerContainer() {
+    var timeout, docker = new Docker();
+
+    timeout = setTimeout(() => {
+      throw new Error('Docker Remote API is unresponsive. Please reset the docker the environment.');
+    }, 8000);
 
     // Run a generator to kill the previous mongo instance and start a new one.
     return co(function *() {
-      var containers, container, timeout;
-
-      timeout = setTimeout(() => {
-        throw new Error('Starting Docker timed out. Please reset the docker the environment.');
-      }, 8000);
+      var containers, container;
 
       // Retrieve a list of current containers and kill mongodb.
       containers = yield Q.ninvoke(docker, 'listContainers');
@@ -57,10 +62,13 @@ class MongoDB {
       clearTimeout(timeout);
 
       return docker.modem;
+    }).catch((err) => {
+      clearTimeout(timeout);
+      throw err;
     });
   }
 
-  static tearDown() {
+  static tearDownDockerContainer() {
     throw new Error('NotYetImplemented')
   }
 

@@ -80,15 +80,21 @@ class Spawner {
   }
 
   connect() {
-    return this.startDatabase().then((docker) => {
-      this.settings.docker = docker;
+    var promise = Promise.resolve();
+
+    if (this.settings.docker) {
+      promise = this.startDockerContainer();
+    }
+
+    return promise.then((docker) => {
+      this.settings.docker = docker || false;
       this.spawnThreads();
       this.throughputController = new ThroughputController(this.threads);
     });
   }
 
-  startDatabase() {
-    return require(`../databases/${this.settings.database}.js`).setUp();
+  startDockerContainer() {
+    return require(`../databases/${this.settings.database}.js`).setUpDockerContainer();
   }
 }
 
