@@ -10,24 +10,6 @@ var PhaseControl = require('./PhaseControl');
  */
 class ThroughtputControllerSteps extends ThroughputController {
 
-  constructor(threads) {
-    super(threads);
-    this.secondLatencies = 0;
-    setInterval(() => {
-      if (this.secondLatencies) {
-        // console.log('transactions in last second: ' + this.secondLatencies);
-      }
-      this.secondLatencies = 0;
-    }, 1000);
-  }
-
-  onThreadMessage(message) {
-    if (message.type === 'latency') {
-      this.setLatency(message.data);
-    }
-    this.secondLatencies++;
-  }
-
   initThroughputEmitter() {
     this.latencyUpdater = setInterval(() => {
 
@@ -47,12 +29,11 @@ class ThroughtputControllerSteps extends ThroughputController {
       this.emit('latency', [Date.now(), this.currentLatency]);
     }, settings.updateLatencyInterval);
 
-
     /**
-     * Phase 1: +1000 On each interval until it fails. Store 60% Of result after first phase.
-     * Phase 2: +300 On each interval until it fails. Store last failed result.
-     * Phase 3: -500 For 30 seconds until it passes. Store last passed result.
-     * Phase 4?: +100 For 30 seconds until it fails. Store passed result.
+     * Phase 1: +1000 On each interval until it fails.   [0] Store 60% Of result after first phase.
+     * Phase 2: +300 On each interval until it fails.    [1] Store last failed result.
+     * Phase 3: -500 For 30 seconds until it passes.     [2] Store last passed result.
+     * Phase 4?: +100 For 30 seconds until it fails.     [3] Store last passed result.
      */
     var results = [];
     var phases = new PhaseControl('active', this, true);
@@ -66,8 +47,16 @@ class ThroughtputControllerSteps extends ThroughputController {
           return 'spike';
         }
 
-        if (results[2] && process.hrtime(this.verifyTime)[0] > 30) {
+        // When the current operationsPerSecond are verified
+        if (this.verifyTime && process.hrtime(this.verifyTime)[0] > 30) {
           console.log('Found the max!', this.operationsPerSecond);
+
+          if (!results[3]) {
+            results[2] = results[3] = this.operationsPerSecond;
+          }
+          results[3] += 100;
+
+          return 'waitForZeroLatency';
         }
       },
       correction() {
@@ -93,7 +82,7 @@ class ThroughtputControllerSteps extends ThroughputController {
       condition() {
         if (process.hrtime(this.cooldownTime)[0] > 10) {
           this.cooldownTime = null;
-          this.operationsPerSecond = results[2] || results[1] || results[0];
+          this.operationsPerSecond = _.last(results);
 
           if (results[2]) {
             this.verifyTime = process.hrtime();
@@ -120,7 +109,7 @@ class ThroughtputControllerSteps extends ThroughputController {
 
           if (!results[0]) results[0] = this.operationsPerSecond * 0.60;
           else if (!results[1]) results[1] = results[2] = this.operationsPerSecond;
-          if (results[2]) results[2] -= 500;
+          if (results[2] && !results[3]) results[2] -= 500;
 
           console.log('RESUlTS', results);
           return 'waitForZeroLatency';
