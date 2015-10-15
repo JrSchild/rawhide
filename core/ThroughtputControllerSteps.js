@@ -49,7 +49,7 @@ class ThroughtputControllerSteps extends ThroughputController {
 
         // When the current operationsPerSecond are verified
         if (this.verifyTime && process.hrtime(this.verifyTime)[0] > 30) {
-          console.log('Found the max!', this.operationsPerSecond);
+          console.log(`Found a new maximum: ${this.operationsPerSecond}`);
 
           if (!results[3]) {
             results[2] = results[3] = this.operationsPerSecond;
