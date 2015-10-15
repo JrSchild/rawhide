@@ -6,8 +6,9 @@ var _ = require('lodash');
  * Class that controls the current phase and when it needs to go the next.
  */
 class PhaseControl {
-  constructor(startPhase, scope) {
+  constructor(startPhase, scope, log) {
     this.scope = scope || this;
+    this.log = log || false;
     this.phases = {};
     this.currentPhase = startPhase;
   }
@@ -23,6 +24,9 @@ class PhaseControl {
       return this.phases[this.currentPhase].correction() || 0;
     }
 
+    if (this.log) {
+      console.log(`end ${this.currentPhase}, start ${newPhase}`);
+    }
     this.currentPhase = newPhase;
 
     return this.next();
