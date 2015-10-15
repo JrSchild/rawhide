@@ -4,6 +4,7 @@
   "cleanupAutomatically": false,
   "skipLoadingPhase": true,
   "loadType": "maxFullBlaf",
+  "docker": false,
   "threads": [
     {
       "workload": "BasicWorkload",
