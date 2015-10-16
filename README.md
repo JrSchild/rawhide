@@ -3,14 +3,9 @@ A Node.js powered database testing framework. It is slightly based on the YCSB b
 
 #### Requirements and Installation
 - Node.js 4.1 or higher
-- Docker
-	- Install docker images (coming soon)
 
 #### Usage
-To better test the maximum load on the database, each database should be run in a Docker container. The database will run in it's own virtual environment so the resources can be limited. The other upside of this is that the testframework can start and kill each database through an API.
-
-Mac OS X
-Make sure your docker environment variables are set properly. Run `docker-machine env {machine-name}` and add the exports values to `~/.bash_profile`. Run `source ~/bash_profile` to reload the variables.
+As long as it is not published on npm you'll need to make globally accesible manually. Clone the project and `cd` into it. Run: `ln -s $(pwd)/bin/rawhide /usr/local/bin/rawhide` to add it to your binaries directory. Then from another folder you can run `rawhide init project-name` to bootstrap your testcase. From this folder you can run `rawhide run` to start your test.
 
 #### Classes
 Spawner: Spawns workload threads and collects metrics.  
