@@ -53,11 +53,13 @@ class Spawner {
         resolverConnected.resolve();
       } else if (message.type === 'finishedLoading') {
         resolverLoaded.resolve();
-      } else if (message.type === 'connectionError') {
-        resolverConnected.reject('NotConnectedError');
-        resolverLoaded.reject('NotConnectedError');
+      } else if (message.type === 'errorConnecting') {
+        resolverConnected.reject(message.data);
+        // resolverLoaded.reject();
       }
     });
+
+    resolverConnected.promise.catch(console.error);
 
     // Initialize the client with settings and add to list of threads.
     this.sendToProcess('init', {
@@ -79,16 +81,13 @@ class Spawner {
     return (process) => process.send(command);
   }
 
+  // This method should become async. Resolve after the
+  // threads are actually connected to the database.
   connect() {
-    return this.startDatabase().then((docker) => {
-      this.settings.docker = docker;
-      this.spawnThreads();
-      this.throughputController = new ThroughputController(this.threads);
-    });
-  }
+    this.spawnThreads();
+    this.throughputController = new ThroughputController(this.threads);
 
-  startDatabase() {
-    return require(`../databases/${this.settings.database}.js`).setUp();
+    return Promise.resolve();
   }
 }
 

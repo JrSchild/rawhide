@@ -10,24 +10,6 @@ var PhaseControl = require('./PhaseControl');
  */
 class ThroughtputControllerSteps extends ThroughputController {
 
-  constructor(threads) {
-    super(threads);
-    this.secondLatencies = 0;
-    setInterval(() => {
-      if (this.secondLatencies) {
-        // console.log('transactions in last second: ' + this.secondLatencies);
-      }
-      this.secondLatencies = 0;
-    }, 1000);
-  }
-
-  onThreadMessage(message) {
-    if (message.type === 'latency') {
-      this.setLatency(message.data);
-    }
-    this.secondLatencies++;
-  }
-
   initThroughputEmitter() {
     this.latencyUpdater = setInterval(() => {
 
@@ -47,78 +29,95 @@ class ThroughtputControllerSteps extends ThroughputController {
       this.emit('latency', [Date.now(), this.currentLatency]);
     }, settings.updateLatencyInterval);
 
-    var runResults = [];
-    var steps = [
-      {correction: 1000, opsDecr: 0.60},
-      {correction: 300, opsDecr: 0.75},
-      {correction: 10, opsDecr: 0.98}
-    ];
-
-    var phases = new PhaseControl('active');
+    /**
+     * Phase 1: +1000 On each interval until it fails.   [0] Store 60% Of result after first phase.
+     * Phase 2: +300 On each interval until it fails.    [1] Store last failed result.
+     * Phase 3: -500 For 30 seconds until it passes.     [2] Store last passed result.
+     * Phase 4?: +100 For 30 seconds until it fails.     [3] Store last passed result.
+     */
+    var results = [];
+    var phases = new PhaseControl('active', this, true);
+    var verified = null;
 
     phases.add('active', {
-      condition: () => {
+      condition() {
         if (this.currentLatency > 800) {
-          if (steps[runResults.length]) {
-            runResults.push(this.operationsPerSecond);
-          }
+          this.spikeTime = process.hrtime();
 
-          this.spikeTime = Date.now() + 20000;
-          console.log('begin spiketime', Date.now());
           return 'spike';
         }
+
+        // When the current operationsPerSecond are verified
+        if (this.verifyTime && process.hrtime(this.verifyTime)[0] > 30) {
+          console.log(`Found a new maximum: ${this.operationsPerSecond}`);
+
+          if (!results[3]) {
+            results[2] = results[3] = this.operationsPerSecond;
+          }
+          results[3] += 100;
+
+          return 'waitForZeroLatency';
+        }
       },
-      correction: () => steps[runResults.length] ? steps[runResults.length].correction : 0
+      correction() {
+        if (!results[0]) return 1000;
+        if (!results[1]) return 300;
+      }
     });
 
     phases.add('waitForZeroLatency', {
-      condition: () => {
+      condition() {
         if (this.currentLatency === 0) {
-          this.cooldownTime = Date.now() + 3000;
+          this.cooldownTime = process.hrtime();
 
           return 'cooldown';
         }
       },
-      correction: () => -this.operationsPerSecond
+      correction() {
+        return -this.operationsPerSecond;
+      }
     });
 
     phases.add('cooldown', {
-      condition: () => {
-        if (this.cooldownTime < Date.now()) {
-          if (_.last(runResults)) {
-            this.operationsPerSecond = _.last(runResults) * steps[runResults.length - 1].opsDecr;
-          } else {
-            this.operationsPerSecond = 0;
+      condition() {
+        if (process.hrtime(this.cooldownTime)[0] > 10) {
+          this.cooldownTime = null;
+          this.operationsPerSecond = _.last(results);
+
+          if (results[2]) {
+            this.verifyTime = process.hrtime();
           }
-          console.log(_.last(runResults), this.operationsPerSecond);
 
           return 'active';
         }
       },
-      correction: () => -this.operationsPerSecond
+      correction() {
+        return -this.operationsPerSecond;
+      }
     });
 
     phases.add('spike', {
-      condition: () => {
-        if (this.currentLatency < 500) {
-          runResults.pop();
+      condition() {
+        if (this.currentLatency < 800) {
           this.spikeTime = null;
 
-          console.log('end spiketime back active', Date.now());
           return 'active';
         }
 
-        if (this.spikeTime < Date.now()) {
-          console.log('end spiketime to waitForZeroLatency', Date.now());
+        if (process.hrtime(this.spikeTime)[0] > 20) {
           this.spikeTime = null;
+
+          if (!results[0]) results[0] = this.operationsPerSecond * 0.60;
+          else if (!results[1]) results[1] = results[2] = this.operationsPerSecond;
+          if (results[2] && !results[3]) results[2] -= 500;
+
+          console.log('RESUlTS', results);
           return 'waitForZeroLatency';
         }
       },
-      correction: () => 0
-    });
-    phases.add('verify', {
-      condition: () => {},
-      correction: () => {}
+      correction() {
+        return 0;
+      }
     });
 
     this.opsPerSecUpdater = setInterval(() => {

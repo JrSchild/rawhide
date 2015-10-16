@@ -30,7 +30,7 @@ class DiscreteGenerator {
 
     // Find the most amount of numbers behind the comma.
     POW = _.reduce(proportions, (POW, value) => {
-      split = `${value}`.split('.')[1] || [];
+      split = `${value}`.split('.')[1] || '';
 
       return Math.max(split.length, POW);
     }, 0);

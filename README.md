@@ -39,6 +39,8 @@ Rawhide should retrieve the following metrics:
 - There seems to be a memory leak in the client child-processes.
 - Dockerize the databases and automate startup/shutdown/etc... through API.
 - Make using Docker optional
+- Improve error handling and graceful shutdown (http://stackoverflow.com/a/14032965)
+- Spawner.spawnThreads should return a promise of when the thread is connected.
 
 #### Wishlist
 - Most awesome way for this to work is use `npm install -g rawhide` to install the framework.
