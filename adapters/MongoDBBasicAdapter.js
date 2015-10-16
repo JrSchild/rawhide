@@ -1,6 +1,6 @@
 'use strict'
 
-var Adapter = require('../core/Adapter');
+var Adapter = require('rawhide/core/Adapter');
 
 class MongoDBBasicAdapter extends Adapter {
   READ(metric) {}

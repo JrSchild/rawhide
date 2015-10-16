@@ -1,6 +1,6 @@
 'use strict'
 
-var Model = require('../core/Model');
+var Model = require('rawhide/core/Model');
 
 const ADAPTERS = {
   MongoDB: 'MongoDBBasicAdapter'
