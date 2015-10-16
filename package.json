@@ -4,10 +4,12 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha",
-    "start": "node index.js",
-    "postinstall": "node link.js"
+    "start": "node index.js"
   },
   "author": "Joram Ruitenschild",
+  "bin": {
+    "rawhide": "./bin/rawhide"
+  },
   "license": "ISC",
   "description": "A highly extensible, Node.js powered database testing framework.",
   "dependencies": {
@@ -16,7 +18,10 @@
     "express": "^4.13.3",
     "lodash": "^3.10.1",
     "mocha": "^2.3.3",
-    "socket.io": "^1.3.7"
+    "node-fs-extra": "^0.8.1",
+    "q": "^1.4.1",
+    "socket.io": "^1.3.7",
+    "yargs": "^3.27.0"
   },
   "devDependencies": {
     "benchmark": "^1.0.0",
