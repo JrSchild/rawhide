@@ -1,0 +1,81 @@
+#!/usr/bin/env node
+
+var child_process = require('child_process');
+var fs = require('fs');
+var fse = require('node-fs-extra');
+var argv = require('yargs').argv;
+var path = require('path');
+
+// Create a standard test scenario.
+if (argv._[0] === 'init') {
+  if (!argv._[1]) {
+    return console.error('Please specify a name');
+  }
+  var targetDir = `./${argv._[1]}`;
+
+  try {
+    fs.lstatSync(targetDir);
+    return console.error('Directory already exists.');
+  } catch (e) {}
+
+  fs.mkdirSync(targetDir);
+  fs.mkdirSync(`${targetDir}/adapters`);
+  fs.mkdirSync(`${targetDir}/models`);
+  fs.mkdirSync(`${targetDir}/workloads`);
+  fs.mkdirSync(`${targetDir}/node_modules`);
+  fse.copySync(`${__dirname}/../database.json`, `${targetDir}/database.json`);
+  fse.copySync(`${__dirname}/../parameters.json`, `${targetDir}/parameters.json`);
+  fse.copySync(`${__dirname}/../adapters/MongoDBBasicAdapter.js`, `${targetDir}/adapters/MongoDBBasicAdapter.js`);
+  fse.copySync(`${__dirname}/../models/BasicModel.js`, `${targetDir}/models/BasicModel.js`);
+  fse.copySync(`${__dirname}/../workloads/BasicWorkload.js`, `${targetDir}/workloads/BasicWorkload.js`);
+
+  createSymlinkSync(__dirname + '/..', `${targetDir}/node_modules/rawhide`);
+
+  return console.log(`Initialized project ${argv._[1]}.`);
+}
+
+if (argv._[0] === 'run') {
+  return require(`${__dirname}/../index.js`);
+}
+
+// Retrieve active rawhide directory (through target of
+// global rawhide) and link it to the local test case.
+if (argv._[0] === 'link') {
+  try {
+    var fromPath = fs.readlinkSync('/usr/local/bin/rawhide');
+    fromPath = path.resolve(fromPath, '../../');
+  } catch (e) {
+    return console.error('Global rawhide binary not found.');
+  }
+
+  createSymlinkSync(fromPath, './node_modules/rawhide');
+
+  return console.log('Linked the Rawhide project into your node_modules directory');
+}
+
+console.log('No arguments specified');
+
+// Cherry picked from https://github.com/npm/npm/blob/master/lib/utils/link.js
+function createSymlinkSync(from, to) {
+  var target;
+
+  to = path.resolve(to);
+  from = target = path.resolve(from);
+
+  if (process.platform !== 'win32') {
+
+    // junctions on windows must be absolute
+    target = path.relative(path.dirname(to), from);
+
+    // if there is no folder in common, then it will be much
+    // longer, and using a relative link is dumb.
+    if (target.length >= from.length) {
+      target = from;
+    }
+  }
+
+  if (fs.existsSync(to)) {
+    fs.unlinkSync(to);
+  }
+  fs.symlinkSync(target, to, 'junction');
+}

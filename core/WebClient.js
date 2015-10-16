@@ -11,7 +11,7 @@ class WebClient {
   constructor(spawner) {
     this.spawner = spawner;
     this.app = express();
-    this.app.use(express.static('static'));
+    this.app.use(express.static(`${__dirname}/../static`));
 
     this.app.get('/api/start', (req, res) => {
       if (this.spawner.start()) {
@@ -21,7 +21,7 @@ class WebClient {
     });
 
     this.server = this.app.listen(1337, () => {
-      console.log('Express is listening to http://localhost:3000');
+      console.log('Express is listening to http://localhost:1337');
     });
 
     this.io = socket.listen(this.server);
