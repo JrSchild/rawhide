@@ -1,8 +1,10 @@
 var methods, workload;
 
+var loader = require('./core/lib/loader.js');
+
 methods = {
   init: function (message) {
-    workload = workload || new (require(`./workloads/${message.data.thread.workload}`))(message.data);
+    workload = workload || new (loader(`./workloads/${message.data.thread.workload}`))(message.data);
   },
   load: function () {
     workload && workload.executeLoad();

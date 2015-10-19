@@ -1,5 +1,6 @@
 'use strict'
 
+var loader = require('./lib/loader');
 var Promise = require('bluebird');
 
 /**
@@ -22,7 +23,7 @@ class Model {
     }
 
     // TODO: Move to adapter and use Promises/generators...?
-    this.adapter = new (require(`../adapters/${this.adapters[this.parameters.settings.database]}.js`))(this);
+    this.adapter = new (loader(`./adapters/${this.adapters[this.parameters.settings.database]}`))(this);
 
     connect = Promise.promisify(this.adapter.connect).bind(this.adapter);
     createTable = Promise.promisify(this.adapter.createTable).bind(this.adapter);

@@ -1,5 +1,6 @@
 'use strict'
 
+var loader = require('./lib/loader');
 var _ = require('lodash');
 
 /**
@@ -13,7 +14,7 @@ class Adapter {
     this.model = model;
     this.parameters = model.parameters;
 
-    var DB = require(`../databases/${this.parameters.settings.database}.js`);
+    var DB = loader(`./databases/${this.parameters.settings.database}`);
 
     // Copy over the methods of the DB class as sort of 'composition'.
     Object.getOwnPropertyNames(DB.prototype).forEach((method) => {

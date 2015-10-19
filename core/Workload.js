@@ -1,5 +1,6 @@
 'use strict'
 
+var loader = require('./lib/loader');
 var DiscreteGenerator = require('./DiscreteGenerator');
 var LimitCounter = require('./LimitCounter');
 var settings = require('../settings.json');
@@ -16,7 +17,7 @@ class Workload {
     this.operationsPerSecond = settings.minOperationsPerSecond;
     this.loadRecords = parameters.settings.loadRecords;
 
-    this.model = new (require(`../models/${parameters.thread.model}.js`))(parameters);
+    this.model = new (loader(`./models/${parameters.thread.model}`))(parameters);
     this.discreteGenerator = new DiscreteGenerator(parameters.thread.proportions);
 
     process.on('message', (message) => {
