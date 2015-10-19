@@ -65,7 +65,10 @@ if (argv._[0] === 'link') {
 // rawhide framework.
 if (argv._[0] === 'unlink') {
   var to = path.resolve('./node_modules/rawhide');
-  fs.unlinkSync(to);
+
+  if (existsSync(to)) {
+    fs.unlinkSync(to);
+  }
 
   return console.log('Removed the Rawhide project from your node_modules directory');
 }
