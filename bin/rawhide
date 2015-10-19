@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 
-var child_process = require('child_process');
 var fs = require('fs');
 var fse = require('node-fs-extra');
 var argv = require('yargs').argv;
@@ -14,10 +13,9 @@ if (argv._[0] === 'init') {
   }
   var targetDir = `./${argv._[1]}`;
 
-  try {
-    fs.lstatSync(targetDir);
+  if (existsSync(targetDir)) {
     return console.error('Directory already exists.');
-  } catch (e) {}
+  }
 
   fs.mkdirSync(targetDir);
   fs.mkdirSync(`${targetDir}/adapters`);
@@ -60,35 +58,49 @@ if (argv._[0] === 'link') {
 
 console.log('No arguments specified');
 
-// Cherry picked from https://github.com/npm/npm/blob/master/lib/utils/link.js
+/**
+ * Create a symlink in node_modules to the global rawhide directory.
+ */
 function createSymlinkSyncToGlobal(to) {
-  var target, fromDir;
+  var source;
 
-  try {
-    fs.lstatSync(path.resolve(to, './package.json'));
-  } catch (e) {
+  // Target directory must have a package.json file.
+  if (!existsSync(path.resolve(to, './package.json'))) {
     throw 'No ./package.json file found in current working directory.';
   }
 
+  // Ensure it has a node_modules folder.
   fse.mkdirsSync(path.resolve(to, './node_modules'));
 
-  fromDir = target = rawhideDir;
+  source = rawhideDir;
   to = path.resolve(to, './node_modules/rawhide');
 
+  // Cherry picked from https://github.com/npm/npm/blob/master/lib/utils/link.js
   if (process.platform !== 'win32') {
 
     // junctions on windows must be absolute
-    target = path.relative(path.dirname(to), fromDir);
+    source = path.relative(path.dirname(to), rawhideDir);
 
     // if there is no folder in common, then it will be much
     // longer, and using a relative link is dumb.
-    if (target.length >= fromDir.length) {
-      target = fromDir;
+    if (source.length >= rawhideDir.length) {
+      source = rawhideDir;
     }
   }
 
-  if (fs.existsSync(to)) {
+  if (existsSync(to)) {
     fs.unlinkSync(to);
   }
-  fs.symlinkSync(target, to, 'junction');
+  fs.symlinkSync(source, to, 'junction');
+}
+
+/**
+ * fs.existsSync is deprecated. Implement our own basic one.
+ */
+function existsSync(to) {
+  try {
+    return !!fs.lstatSync(to);
+  } catch (e) {
+    return null;
+  }
 }
