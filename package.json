@@ -10,6 +10,9 @@
   "bin": {
     "rawhide": "./bin/rawhide"
   },
+  "engines": {
+    "node": ">=4.1"
+  },
   "license": "ISC",
   "description": "A highly extensible, Node.js powered database testing framework.",
   "dependencies": {
