@@ -6,6 +6,7 @@ var argv = require('yargs')
     .command('init <project-name>', 'Bootstrap new testcase.')
     .command('run', 'Start the current testcase.')
     .command('link', 'Symlinks the global rawhide installation into the node_modules directory.')
+    .command('unlink', 'Unlinks rawhide installation from your node_modules directory.')
     .demand(1).argv;
 var path = require('path');
 var rawhideDir = path.resolve(__dirname, '../');
@@ -58,6 +59,15 @@ if (argv._[0] === 'link') {
   createSymlinkSyncToGlobal('./');
 
   return console.log('Linked the Rawhide project into your node_modules directory');
+}
+
+// Create a symlink in the current project to the
+// rawhide framework.
+if (argv._[0] === 'unlink') {
+  var to = path.resolve('./node_modules/rawhide');
+  fs.unlinkSync(to);
+
+  return console.log('Removed the Rawhide project from your node_modules directory');
 }
 
 /**

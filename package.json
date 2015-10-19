@@ -5,6 +5,7 @@
   "scripts": {
     "test": "mocha",
     "start": "node index.js",
+    "preinstall": "node bin/rawhide unlink",
     "postinstall": "node bin/rawhide link"
   },
   "author": "Joram Ruitenschild",
