@@ -5,7 +5,10 @@ A Node.js powered database testing framework. It is slightly based on the YCSB b
 - Node.js 4.1 or higher
 
 #### Usage
-As long as it is not published on npm you'll need to make globally accesible manually. Clone the project and `cd` into it. Run: `ln -s $(pwd)/bin/rawhide /usr/local/bin/rawhide` to add it to your binaries directory. Then from another folder you can run `rawhide init project-name` to bootstrap your testcase. From this folder you can run `rawhide run` to start your test.
+Rawhide is not yet published on npm but can be installed globally directly from the repository with: `npm install -g git://github.com/JrSchild/Rawhide.git`. Run `rawhide init project-name` to bootstrap your testcase. Within this directory execute `rawhide run` to start your test.
+
+##### Developing Rawhide
+The easiest way to help developing the framework is to clone the project and `cd` into it. Create a symlink in the binary folder to this project: `ln -s -f $(pwd)/bin/rawhide /usr/local/bin/rawhide` and you are ready to go.
 
 #### Classes
 Spawner: Spawns workload threads and collects metrics.  
@@ -41,6 +44,7 @@ Rawhide should retrieve the following metrics:
 - Most awesome way for this to work is use `npm install -g rawhide` to install the framework.
 	- `rawhide init` to create a dummy test case with configuration, basic adapters, models and workloads.
 	- `rawhide run` start the testcase.
+	- `rawhide add database` will give you a set of questions to add a new database to your project. If the connector is not predefined it gives you the chance to do so. This will create the databases directory, update your configuration and package.json file.
 - ThroughputController independent of settings.
 	- Implement PIDController for better algorithm to adjust operations per second.
 - The problem of ThroughputController is that it's response is too late. If the latency is five seconds, then the response of the PIDController will be five seconds behind as well.
