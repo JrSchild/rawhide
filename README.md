@@ -34,17 +34,14 @@ Rawhide should retrieve the following metrics:
 	- Adapter should be instantiated on Workload rather than on model.
 - Imporove error handling and graceful shutdown.
 - Create an awesome way of statistics collecting.
-- There seems to be a memory leak in the client child-processes.
-- Dockerize the databases and automate startup/shutdown/etc... through API.
-- Make using Docker optional
+- ~~There seems to be a memory leak in the client child-processes.~~
+- ~~Dockerize the databases and automate startup/shutdown/etc... through API.~~
+- ~~Make using Docker optional~~
 - Improve error handling and graceful shutdown (http://stackoverflow.com/a/14032965)
 - Spawner.spawnThreads should return a promise of when the thread is connected.
 
 #### Wishlist
-- Most awesome way for this to work is use `npm install -g rawhide` to install the framework.
-	- `rawhide init` to create a dummy test case with configuration, basic adapters, models and workloads.
-	- `rawhide run` start the testcase.
-	- `rawhide add database` will give you a set of questions to add a new database to your project. If the connector is not predefined it gives you the chance to do so. This will create the databases directory, update your configuration and package.json file.
+- `rawhide add database` will give you a set of questions to add a new database to your project. If the connector is not predefined it gives you the chance to do so. This will create the databases directory, update your configuration and package.json file.
 - ThroughputController independent of settings.
 	- Implement PIDController for better algorithm to adjust operations per second.
 - The problem of ThroughputController is that it's response is too late. If the latency is five seconds, then the response of the PIDController will be five seconds behind as well.
