@@ -2,7 +2,11 @@
 
 var fs = require('fs');
 var fse = require('node-fs-extra');
-var argv = require('yargs').argv;
+var argv = require('yargs')
+    .command('init <project-name>', 'Bootstrap new testcase.')
+    .command('run', 'Start the current testcase.')
+    .command('link', 'Symlinks the global rawhide installation into the node_modules directory.')
+    .demand(1).argv;
 var path = require('path');
 var rawhideDir = path.resolve(__dirname, '../');
 
@@ -55,8 +59,6 @@ if (argv._[0] === 'link') {
 
   return console.log('Linked the Rawhide project into your node_modules directory');
 }
-
-console.log('No arguments specified');
 
 /**
  * Create a symlink in node_modules to the global rawhide directory.
