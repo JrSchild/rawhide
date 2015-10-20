@@ -1,5 +1,6 @@
 'use strict'
 
+var Q = require('q');
 var MongoClient = require('mongodb').MongoClient;
 var DBSettings = require('../database.json').MongoDB;
 
@@ -8,13 +9,12 @@ var DBSettings = require('../database.json').MongoDB;
  * Methods are all generic, they do not depend on Model implementation.
  */
 class MongoDB {
-  connect(cb, overwrites) {
+  connect(/*overwrites*/) {
+    var url = `mongodb://${DBSettings.host}:${DBSettings.port}/${DBSettings.database}`;
 
-    MongoClient.connect(`mongodb://${DBSettings.host}:${DBSettings.port}/${DBSettings.database}`, (err, db) => {
-      if (err) return cb && cb(err);
-
-      db.on('close', (error) => console.error(`Connection to db closed! ${error}`))
-      cb && cb(null, this.db = db);
+    return Q.ninvoke(MongoClient, 'connect', url).then((db) => {
+      this.db = db;
+      this.db.on('close', (error) => console.error(`Connection to db closed! ${error}`))
     });
   }
 

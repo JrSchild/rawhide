@@ -22,14 +22,11 @@ class Model {
       throw new Error('AdapterNotSetError');
     }
 
-    // TODO: Move to adapter and use Promises/generators...?
+    // TODO: Move connecting to adapter.
     this.adapter = new (loader(`./adapters/${this.adapters[this.parameters.settings.database]}`))(this);
 
-    connect = Promise.promisify(this.adapter.connect).bind(this.adapter);
-    createTable = Promise.promisify(this.adapter.createTable).bind(this.adapter);
-
-    connect()
-      .then(() => createTable())
+    this.adapter.connect()
+      .then(() => this.adapter.createTable())
       .then(() => process.send({
         type: 'connected'
       }))

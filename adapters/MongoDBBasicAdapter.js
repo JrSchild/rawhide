@@ -28,10 +28,8 @@ class MongoDBBasicAdapter extends Adapter {
     });
   }
 
-  createTable(cb) {
-    this.db.createCollection(this.parameters.thread.tableName)
-      .then(() => cb())
-      .catch((err) => cb(err));
+  createTable() {
+    return null;
   }
 
   // Clean up and delete database.
