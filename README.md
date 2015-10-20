@@ -4,7 +4,6 @@ A Node.js powered database testing framework. It is slightly based on the YCSB b
 #### Requirements and Installation
 - Node.js 4.1 or higher
 
-#### Usage
 Rawhide is not yet published on npm but can be installed globally directly from the repository with: `npm install -g git://github.com/JrSchild/Rawhide.git`. Run `rawhide init project-name` to bootstrap your testcase. Within this directory execute `rawhide run` to start your test.
 
 ##### Developing Rawhide
@@ -39,6 +38,7 @@ Rawhide should retrieve the following metrics:
 - ~~Make using Docker optional~~
 - Improve error handling and graceful shutdown (http://stackoverflow.com/a/14032965)
 - Spawner.spawnThreads should return a promise of when the thread is connected.
+- Creating the table should be done at startup in Spawner, not at connection in four different threads.
 
 #### Wishlist
 - `rawhide add database` will give you a set of questions to add a new database to your project. If the connector is not predefined it gives you the chance to do so. This will create the databases directory, update your configuration and package.json file.
