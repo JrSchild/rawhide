@@ -1,5 +1,11 @@
 #!/usr/bin/env node
 
+// In case it is trying to unlink but the node modules are not installed yet.
+process.on('uncaughtException', (e) => {
+  console.error(e);
+  process.exit();
+});
+
 var fs = require('fs');
 var fse = require('node-fs-extra');
 var argv = require('yargs')
