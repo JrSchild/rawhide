@@ -7,7 +7,9 @@ var argv = require('yargs')
     .command('run', 'Start the current testcase.')
     .command('link', 'Symlinks the global rawhide installation into the node_modules directory.')
     .command('unlink', 'Unlinks rawhide installation from your node_modules directory.')
+    .command('add', 'Add a model, adapter or database to your testcase.')
     .demand(1).argv;
+var inquirer = require('inquirer');
 var path = require('path');
 var rawhideDir = path.resolve(__dirname, '../');
 
@@ -71,6 +73,38 @@ if (argv._[0] === 'unlink') {
   }
 
   return console.log('Removed the Rawhide project from your node_modules directory');
+}
+
+// Add a model or adapter through the CLI. Just a quick pieve, this could be cleaner.
+if (argv._[0] === 'add') {
+  var supported = {
+    'Model': [`models/`, 'BasicModel'],
+    'Adapter': [`adapters/`, 'MongoDBBasicAdapter']
+  };
+
+  return inquirer.prompt([{
+    name: 'value',
+    type: 'list',
+    message: 'What would you like to add?',
+    choices: ['Model', 'Adapter', 'Database'],
+  }], (type) => {
+    var fromFile;
+
+    if (!(fromFile = supported[type.value])) {
+      return console.error('Type not yet supported');
+    }
+
+    inquirer.prompt({
+      name: 'value',
+      message: `What is the name of your ${type.value}?`,
+      validate: (input) => !!input
+    }, (name) => {
+      var file = fs.readFileSync(`${rawhideDir}/${fromFile[0]}${fromFile[1]}.js`, 'utf8');
+
+      name = name.value.charAt(0).toUpperCase() + name.value.slice(1) + type.value;
+      fs.writeFileSync(`./${fromFile[0]}/${name}.js`, file.replace(new RegExp(fromFile[1], 'g'), name));
+    });
+  });
 }
 
 /**
