@@ -83,8 +83,8 @@ class Spawner {
     return (process) => process.send(command);
   }
 
-  // This method should become async. Resolve after the
-  // threads are actually connected to the database.
+  // This method should resolve after the threads
+  // are connected to the database.
   connect() {
     var promise = Promise.resolve();
 
