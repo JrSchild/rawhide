@@ -1,7 +1,6 @@
 'use strict'
 
 var loader = require('./lib/loader');
-var Promise = require('bluebird');
 
 /**
  * Class that transforms incoming data and passes it through to the adapter.
