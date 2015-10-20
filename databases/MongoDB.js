@@ -18,6 +18,11 @@ class MongoDB {
     });
   }
 
+  // Delete the database to clear up the space. It will be automatically recreated when reconnecting.
+  clearDB() {
+    return Q.ninvoke(this.db, 'dropDatabase');
+  }
+
   getIndexMemory() {}
 
   getDiskSize() {}

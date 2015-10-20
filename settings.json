@@ -11,5 +11,6 @@
   "operationsPerSecond": 10,
   "tableName": "table",
   "fieldCount": 10,
-  "loadSplit": 10
+  "loadSplit": 10,
+  "preTruncate": true
 }

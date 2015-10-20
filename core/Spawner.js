@@ -4,7 +4,9 @@ var fork = require('child_process').fork;
 var path = require('path');
 var _ = require('lodash');
 var Promise = require('bluebird');
+var loader = require('./lib/loader');
 var ThroughputController = require('./ThroughtputControllerSteps');
+var globalSettings = require('../settings.json');
 
 class Spawner {
   constructor(settings) {
@@ -84,10 +86,22 @@ class Spawner {
   // This method should become async. Resolve after the
   // threads are actually connected to the database.
   connect() {
-    this.spawnThreads();
-    this.throughputController = new ThroughputController(this.threads);
+    var promise = Promise.resolve();
 
-    return Promise.resolve();
+    if (globalSettings.preTruncate) {
+      promise = this.clearDB();
+    }
+
+    return promise.then(() => {
+      this.spawnThreads();
+      this.throughputController = new ThroughputController(this.threads);
+    });
+  }
+
+  clearDB() {
+    var db = new (loader(`./databases/${this.settings.database}`))();
+
+    return db.connect().then(db.clearDB.bind(db));
   }
 }
 
