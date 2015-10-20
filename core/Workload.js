@@ -48,6 +48,8 @@ class Workload {
     this[`start${name}Time`] = Date.now();
     this.operationsPerSecond = settings.operationsPerSecond;
     this.counter = new LimitCounter(operations, (err) => {
+      if (err) throw err;
+
       this[`is${name}`] = false;
       this.isBusy = false;
 
