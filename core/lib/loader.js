@@ -11,7 +11,11 @@ var secondDir = path.resolve(__dirname, '../../');
 module.exports = (filename, merge) => {
   try {
     return require(path.resolve(firstDir, filename));
-  } catch (e) {}
+  } catch (e) {
+    if (e.code !== 'MODULE_NOT_FOUND') {
+      throw e;
+    }
+  }
 
   return require(path.resolve(secondDir, filename));
 };
