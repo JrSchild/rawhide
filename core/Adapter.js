@@ -21,6 +21,10 @@ class Adapter {
       this[method] = DB.prototype[method];
     });
   }
+
+  createTable() {
+    throw new Error('Create table not Implemented');
+  }
 }
 
 module.exports = Adapter;
