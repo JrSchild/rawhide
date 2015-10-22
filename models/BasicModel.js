@@ -7,10 +7,6 @@ const ADAPTERS = {
 };
 
 class BasicModel extends Model {
-  constructor(parameters) {
-    super(parameters, ADAPTERS);
-  }
-
   WRITE(data, done) {
     this.adapter.WRITE(data, done);
   }
@@ -21,3 +17,4 @@ class BasicModel extends Model {
 }
 
 module.exports = BasicModel;
+module.exports.ADAPTERS = ADAPTERS;

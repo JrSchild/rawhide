@@ -8,9 +8,9 @@ var loader = require('./lib/loader');
  * before it can be saved.
  */
 class Model {
-  constructor(parameters, adapters) {
+  constructor(parameters) {
     this.parameters = parameters;
-    this.adapters = adapters || {};
+    this.adapters = this.constructor.ADAPTERS || {};
     this.connect();
   }
 
