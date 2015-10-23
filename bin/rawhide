@@ -14,6 +14,7 @@ var argv = require('yargs')
     .command('link', 'Symlinks the global rawhide installation into the node_modules directory.')
     .command('unlink', 'Unlinks rawhide installation from your node_modules directory.')
     .command('add', 'Add a model, adapter or database to your testcase.')
+    .describe('start', 'Start the test immediately.')
     .demand(1).argv;
 var inquirer = require('inquirer');
 var path = require('path');
@@ -58,7 +59,8 @@ if (argv._[0] === 'init') {
 // TODO: Maybe add extra checks to make sure it's
 // a valid rawhide test case?
 if (argv._[0] === 'run') {
-  return require(`${rawhideDir}/index.js`);
+  return require(`${rawhideDir}/index.js`)
+    .then((spawner) => argv.start && spawner.start());
 }
 
 // Create a symlink in the current project to the
