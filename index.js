@@ -7,5 +7,5 @@ var spawner = new Spawner(parameters);
 
 module.exports = spawner.connect()
   .then(() => new WebClient(spawner))
-  .catch(console.error) // TODO
-  .then(() => spawner);
+  .then(() => spawner)
+  .catch(console.error); // TODO
