@@ -15,8 +15,6 @@ class Model {
   }
 
   connect() {
-    var connect, createTable;
-
     if (!this.adapters[this.parameters.settings.database]) {
       throw new Error('AdapterNotSetError');
     }
@@ -24,15 +22,7 @@ class Model {
     // TODO: Move connecting to adapter.
     this.adapter = new (loader(`./adapters/${this.adapters[this.parameters.settings.database]}`))(this);
 
-    this.adapter.connect()
-      .then(() => this.adapter.createTable())
-      .then(() => process.send({
-        type: 'connected'
-      }))
-      .catch((err) => process.send({
-        type: 'errorConnecting',
-        data: err
-      }));
+    return this.adapter.connect();
   }
 
   // This will be replaced by smarter/better methods for metrics handling/collecting.

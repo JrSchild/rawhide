@@ -19,6 +19,25 @@ class Adapter {
     Object.getOwnPropertyNames(DB.prototype).forEach((method) => {
       this[method] = DB.prototype[method];
     });
+
+    // Intercept calls to the connect method.
+    this.connect = Adapter.prototype.connect.bind(this, this.connect);
+  }
+
+  connect(connectFn) {
+    return connectFn.call(this)
+      .then(() => this.createTable())
+      .then(() => process.send({
+        type: 'connected'
+      }))
+      .catch((err) => {
+        process.send({
+          type: 'errorConnecting',
+          data: err
+        });
+
+        throw err;
+      });
   }
 
   createTable() {
