@@ -1,7 +1,6 @@
 'use strict'
 
 var loader = require('./lib/loader');
-var _ = require('lodash');
 
 /**
  * This class is used to hook up the Model with the database. It
