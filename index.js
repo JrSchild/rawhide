@@ -8,4 +8,5 @@ var spawner = new Spawner(parameters);
 module.exports = spawner.connect()
   .then(() => new WebClient(spawner))
   .then(() => spawner)
-  .catch(console.error); // TODO
+
+module.exports.catch(console.error); // TODO
