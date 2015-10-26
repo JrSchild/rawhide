@@ -6,7 +6,7 @@ var _ = require('lodash');
  * A limited queue utility class that that can calculate the average.
  */
 class LimitQueue {
-  construct(limit) {
+  constructor(limit) {
     this.limit = limit;
     this.data = Array(limit);
   }
@@ -17,7 +17,7 @@ class LimitQueue {
   }
 
   average() {
-    return _.sum(this.latencies) / this.limit;
+    return _.sum(this.data) / this.limit;
   }
 }
 
