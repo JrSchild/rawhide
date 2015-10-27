@@ -28,6 +28,9 @@ Rawhide should retrieve the following metrics:
 - disk size
 
 #### TODO
+- Emit executed operations per seconds from statistics.
+- Show queueCount and executed operations per seconds in the graph.
+- ~~LimitCounter Unit Tests.~~
 - Design the model and adapter in such a way that the model can be omitted.
 	- ~~Connecting should go through the adapter rather than the model.~~
 	- Adapter should be instantiated on Workload rather than on model.
