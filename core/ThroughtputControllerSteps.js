@@ -8,7 +8,7 @@ var PhaseControl = require('./PhaseControl');
 /**
  * Increase the operations per second linearly until the latency freaks out.
  */
-class ThroughtputControllerSteps extends ThroughputController {
+class ThroughputControllerSteps extends ThroughputController {
 
   initThroughputEmitter() {
     this.latencyUpdater = setInterval(() => {
@@ -138,4 +138,4 @@ class ThroughtputControllerSteps extends ThroughputController {
   }
 }
 
-module.exports = ThroughtputControllerSteps;
+module.exports = ThroughputControllerSteps;
