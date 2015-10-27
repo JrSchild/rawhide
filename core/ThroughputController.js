@@ -15,9 +15,10 @@ var settings = require('../settings.json');
  * incrementally use steps to increase the throughput over time.
  */
 class ThroughputController extends EventEmitter {
-  constructor(threads) {
+  constructor(threads, statistics) {
     super();
     this.threads = threads;
+    this.statistics = statistics;
     this.reset();
     this.initThreads();
   }

@@ -26,7 +26,7 @@ class WebClient {
 
     this.io = socket.listen(this.server);
 
-    this.spawner.throughputController.on('latency', (latency) => {
+    this.spawner.statistics.on('latency', (latency) => {
       this.io.sockets.emit('latency', latency);
     });
     this.spawner.throughputController.on('operationsPerSecond', (operationsPerSecond) => {

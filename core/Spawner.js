@@ -6,6 +6,7 @@ var _ = require('lodash');
 var Promise = require('bluebird');
 var loader = require('./lib/loader');
 var ThroughputController = require('./ThroughputControllerSteps');
+var Statistics = require('./Statistics');
 var globalSettings = require('../settings.json');
 
 class Spawner {
@@ -94,7 +95,8 @@ class Spawner {
 
     return promise.then(() => {
       this.spawnThreads();
-      this.throughputController = new ThroughputController(this.threads);
+      this.statistics = new Statistics(this.threads);
+      this.throughputController = new ThroughputController(this.threads, this.statistics);
     });
   }
 
