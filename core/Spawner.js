@@ -5,7 +5,7 @@ var path = require('path');
 var _ = require('lodash');
 var Promise = require('bluebird');
 var loader = require('./lib/loader');
-var ThroughputController = require('./ThroughtputControllerSteps');
+var ThroughputController = require('./ThroughputControllerSteps');
 var globalSettings = require('../settings.json');
 
 class Spawner {
