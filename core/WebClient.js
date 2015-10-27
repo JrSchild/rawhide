@@ -29,22 +29,12 @@ class WebClient {
     this.spawner.statistics.on('latency', (latency) => {
       this.io.sockets.emit('latency', latency);
     });
+    this.spawner.statistics.on('queueCount', (queueCount) => {
+      this.io.sockets.emit('queueCount', queueCount);
+    });
     this.spawner.throughputController.on('operationsPerSecond', (operationsPerSecond) => {
       this.io.sockets.emit('operationsPerSecond', [Date.now(), operationsPerSecond]);
     });
-
-    this.threadsCounterStates = {};
-    this.spawner.threads.forEach((thread) => {
-      thread.on('message', (message) => {
-        if (message.type === 'queueCount') {
-          this.threadsCounterStates[message.pid] = message.data;
-        }
-      });
-    });
-
-    setInterval(() => {
-      this.io.sockets.emit('queueCount', [Date.now(), _.sum(this.threadsCounterStates)]);
-    }, 600);
   }
 }
 

@@ -21,6 +21,9 @@ class Statistics extends EventEmitter {
     // value: count
     this.operationsPerSecond = {};
 
+    // Stores the queueCount for each thread with pid as key.
+    this.queueCounts = {};
+
     this.initThreads();
     this.initLatencyUpdater();
   }
@@ -34,6 +37,9 @@ class Statistics extends EventEmitter {
     if (message.type === 'latency') {
       this.latencies.push(message.end - message.start);
       this.updateOpsPerSec(message);
+    } else if (message.type === 'queueCount') {
+      this.queueCounts[message.pid] = message.data;
+      this.updateQueueCount();
     }
   }
 
@@ -69,6 +75,16 @@ class Statistics extends EventEmitter {
       // Start fresh on next iteration.
       this.latencies = [];
     }, settings.updateLatencyInterval);
+  }
+
+  // Waits until queue count of all threads are in, then rewrites the
+  // method to a throttled function that emits the sum of all threads.
+  updateQueueCount() {
+    if (Object.keys(this.queueCounts).length === this.threads.length) {
+      this.updateQueueCount = _.throttle(() => {
+        this.emit('queueCount', [Date.now(), _.sum(this.queueCounts)]);
+      }, 100);
+    }
   }
 }
 
