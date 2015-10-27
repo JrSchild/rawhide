@@ -11,7 +11,7 @@
   "author": "Joram Ruitenschild",
   "repository": {
     "type": "git",
-    "url": "https://github.com/JrSchild/Rawhide.git"
+    "url": "https://github.com/JrSchild/rawhide.git"
   },
   "bin": {
     "rawhide": "./bin/rawhide"
