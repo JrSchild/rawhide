@@ -10,7 +10,7 @@ class MongoDBBasicAdapter extends Adapter {
 
     this.db.collection(this.parameters.thread.tableName)
       .insertOne(data, (err) => {
-        this.model.setLatency(Date.now() - start);
+        this.model.setLatency(start, Date.now());
         done(err);
       });
   }
@@ -23,7 +23,7 @@ class MongoDBBasicAdapter extends Adapter {
 
     cursor.nextObject((err, res) => {
       cursor.close()
-      this.model.setLatency(Date.now() - start);
+      this.model.setLatency(start, Date.now());
       done(err);
     });
   }

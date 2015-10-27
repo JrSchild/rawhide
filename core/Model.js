@@ -28,10 +28,11 @@ class Model {
   // This will be replaced by smarter/better methods for metrics handling/collecting.
   // Maybe within the done() callback of the LimitCounter. Where that class will be
   // collect metrics data.
-  setLatency(latency) {
+  setLatency(start, end) {
     process.send({
       type: 'latency',
-      data: latency
+      start,
+      end
     });
   }
 }

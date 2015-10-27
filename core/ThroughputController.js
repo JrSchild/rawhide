@@ -28,7 +28,7 @@ class ThroughputController extends EventEmitter {
     this.latencies = [];
     clearInterval(this.latencyUpdater);
     clearInterval(this.opsPerSecUpdater);
-    this.initThroughputEmitter()
+    this.initThroughputEmitter();
   }
 
   // Start listening to all threads.
@@ -38,7 +38,7 @@ class ThroughputController extends EventEmitter {
 
   onThreadMessage(message) {
     if (message.type === 'latency') {
-      this.setLatency(message.data);
+      this.setLatency(message.end - message.start);
     }
   }
 
