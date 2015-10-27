@@ -90,9 +90,9 @@ socket.on('operationsPerSecond', function (operationsPerSecond) {
   last = operationsPerSecond[1];
 });
 
-socket.on('counterState', function (counterState) {
+socket.on('queueCount', function (queueCount) {
   if (started) {
-    console.log(counterState[0], counterState[1]);
+    console.log(queueCount[0], queueCount[1]);
   }
 });
 

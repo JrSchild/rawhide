@@ -61,7 +61,7 @@ class Workload {
     });
     this.emitCounterInterval = setInterval(() => {
       process.send({
-        type: 'counterState',
+        type: 'queueCount',
         pid: process.pid,
         data: this.counter.prepCurrent - this.counter.current
       });

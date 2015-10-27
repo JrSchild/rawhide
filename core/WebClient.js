@@ -36,14 +36,14 @@ class WebClient {
     this.threadsCounterStates = {};
     this.spawner.threads.forEach((thread) => {
       thread.on('message', (message) => {
-        if (message.type === 'counterState') {
+        if (message.type === 'queueCount') {
           this.threadsCounterStates[message.pid] = message.data;
         }
       });
     });
 
     setInterval(() => {
-      this.io.sockets.emit('counterState', [Date.now(), _.sum(this.threadsCounterStates)]);
+      this.io.sockets.emit('queueCount', [Date.now(), _.sum(this.threadsCounterStates)]);
     }, 600);
   }
 }
