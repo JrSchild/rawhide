@@ -32,6 +32,9 @@ class WebClient {
     this.spawner.statistics.on('queueCount', (queueCount) => {
       this.io.sockets.emit('queueCount', queueCount);
     });
+    this.spawner.statistics.on('executedOperationsPerSecond', (executedOperationsPerSecond) => {
+      this.io.sockets.emit('executedOperationsPerSecond', executedOperationsPerSecond);
+    });
     this.spawner.throughputController.on('operationsPerSecond', (operationsPerSecond) => {
       this.io.sockets.emit('operationsPerSecond', [Date.now(), operationsPerSecond]);
     });
