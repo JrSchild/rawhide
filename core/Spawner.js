@@ -5,7 +5,7 @@ var path = require('path');
 var _ = require('lodash');
 var Promise = require('bluebird');
 var loader = require('./lib/loader');
-var ThroughputController = require('./ThroughputControllerSteps');
+var ThroughputController = require('./ThroughputControllerInQueue');
 var Statistics = require('./Statistics');
 var globalSettings = require('../settings.json');
 
