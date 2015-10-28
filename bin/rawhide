@@ -14,6 +14,7 @@ var argv = require('yargs')
     .command('link', 'Symlinks the global rawhide installation into the node_modules directory.')
     .command('unlink', 'Unlinks rawhide installation from your node_modules directory.')
     .command('add', 'Add a model, adapter or database to your testcase.')
+    .alias('s', 'start')
     .describe('start', 'Start the test immediately.')
     .demand(1).argv;
 var inquirer = require('inquirer');
