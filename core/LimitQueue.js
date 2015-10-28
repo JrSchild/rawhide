@@ -20,7 +20,11 @@ class LimitQueue {
   }
 
   average() {
-    return _.sum(this.data) / this.data.length;
+    return this.sum() / this.data.length;
+  }
+
+  sum() {
+    return _.sum(this.data);
   }
 }
 

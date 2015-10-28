@@ -14,6 +14,10 @@ describe('Limit Queue', () => {
     expect(limitQueue.average()).to.equal(5.4);
   });
 
+  it('Calculates sum', () => {
+    expect(limitQueue.sum()).to.equal(27);
+  });
+
   it('Calculates average on a non-full queue', () => {
     var limitQueue = new LimitQueue(5);
     [5, 7, 9].forEach((v) => limitQueue.push(v));
