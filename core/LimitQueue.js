@@ -8,17 +8,25 @@ var _ = require('lodash');
 class LimitQueue {
   constructor(limit) {
     this.limit = limit;
-    this.data = Array(limit);
+    this.data = [];
   }
 
   push(elem) {
     this.data.push(elem);
-    this.data.shift();
+
+    if (this.data.length === this.limit) {
+      this.push = pushShift;
+    }
   }
 
   average() {
-    return _.sum(this.data) / this.limit;
+    return _.sum(this.data) / this.data.length;
   }
+}
+
+function pushShift(elem) {
+  this.data.push(elem);
+  this.data.shift();
 }
 
 module.exports = LimitQueue;
