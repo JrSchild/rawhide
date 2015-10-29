@@ -11,7 +11,6 @@ class Model {
   constructor(parameters) {
     this.parameters = parameters;
     this.adapters = this.constructor.ADAPTERS || {};
-    this.connect();
   }
 
   connect() {

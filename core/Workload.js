@@ -14,11 +14,13 @@ var settings = require('../settings.json');
 class Workload {
   constructor(parameters) {
     this.parameters = parameters;
-    this.operationsPerSecond = settings.minOperationsPerSecond;
-    this.loadRecords = parameters.settings.loadRecords;
+    this.operationsPerSecond = 0;
 
     this.model = new (loader(`./models/${parameters.thread.model}`))(parameters);
+    this.model.connect()
+      .then(() => this.run());
     this.discreteGenerator = new DiscreteGenerator(parameters.thread.proportions);
+    this.operationMethod = () => this[this.discreteGenerator.next](this.counter.add());
 
     process.on('message', (message) => {
       if (message.type === 'setOperationsPerSecond') {
@@ -27,26 +29,17 @@ class Workload {
     });
   }
 
-  destructor() {}
-
-  executeLoad() {
-    this.execute('Loading', this.parameters.settings.loadRecords, () => this.load(this.counter.add()));
-  }
-
-  executeRun() {
-    this.execute('Running', this.parameters.thread.runOperations, () => {
-      this[this.discreteGenerator.next](this.counter.add())
-    });
+  run() {
+    this.execute('Running', this.parameters.thread.runOperations, this.operationMethod);
   }
 
   execute(name, operations, operationMethod) {
     if (this[`is${name}`] || this.isBusy) return;
-    console.log(`Start ${name} phase.`);
+    // console.log(`Start ${name}.`);
 
     this.isBusy = true;
     this[`is${name}`] = true;
     this[`start${name}Time`] = Date.now();
-    this.operationsPerSecond = settings.operationsPerSecond;
     this.counter = new LimitCounter(operations, (err) => {
       if (err) throw err;
 
@@ -85,12 +78,6 @@ class Workload {
       }, i * interval);
     }
   }
-
-  loadTable() {}
-
-  run() {}
-
-  stop() {}
 }
 
 module.exports = Workload;

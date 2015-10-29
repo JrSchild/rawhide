@@ -5,7 +5,7 @@ var path = require('path');
 var _ = require('lodash');
 var Promise = require('bluebird');
 var loader = require('./lib/loader');
-var ThroughputController = require('./ThroughputControllerInQueue');
+var ThroughputController = require('./ThroughputControllerSteps');
 var Statistics = require('./Statistics');
 var globalSettings = require('../settings.json');
 
@@ -14,7 +14,6 @@ class Spawner {
     this.settings = settings;
     this.threads = [];
     this.threadsConnected = [];
-    this.threadsLoaded = [];
   }
 
   start() {
@@ -24,27 +23,24 @@ class Spawner {
 
     this.started = true;
 
-    Promise.all(this.threadsConnected).then(() => console.log('All threads are connected.'));
-    Promise.all(this.threadsLoaded).then(() => console.log('All threads are loaded.'));
-
-    Promise.all(this.threadsConnected).then(() => this.sendToThreads(!this.settings.skipLoadingPhase ? 'load' : 'run'));
-    Promise.all(this.threadsLoaded).then(() => {
-      this.throughputController.reset();
-      !this.settings.skipLoadingPhase && this.sendToThreads('run');
-    });
+    this.threadsConnected.then(() => this.throughputController.start());
 
     return true;
   }
 
   spawnThreads() {
+    console.log('Spawning threads');
+
     this.settings.threads.forEach((thread) => {
       _.times(thread.multiply || 1, this.spawnThread.bind(this, thread));
     });
+
+    // this.threadsConnected is an array of promises. Turn it into one promise to be resolved.
+    return (this.threadsConnected = Promise.all(this.threadsConnected));
   }
 
   spawnThread(thread) {
     var resolverConnected = Promise.pending();
-    var resolverLoaded = Promise.pending();
     var process = fork(path.resolve(__dirname, '../worker.js'));
 
     // TODO: Imporove error handling.
@@ -54,11 +50,8 @@ class Spawner {
     process.on('message', (message) => {
       if (message.type === 'connected') {
         resolverConnected.resolve();
-      } else if (message.type === 'finishedLoading') {
-        resolverLoaded.resolve();
       } else if (message.type === 'errorConnecting') {
         resolverConnected.reject(message.data);
-        // resolverLoaded.reject();
       }
     });
 
@@ -71,7 +64,6 @@ class Spawner {
     })(process);
     this.threads.push(process);
     this.threadsConnected.push(resolverConnected.promise);
-    this.threadsLoaded.push(resolverLoaded.promise);
   }
 
   sendToThreads(type, data) {
@@ -84,20 +76,22 @@ class Spawner {
     return (process) => process.send(command);
   }
 
-  // This method should resolve after the threads
-  // are connected to the database.
   connect() {
     var promise = Promise.resolve();
 
     if (globalSettings.preTruncate) {
+      console.log('Clearing database');
+
       promise = this.clearDB();
     }
 
-    return promise.then(() => {
-      this.spawnThreads();
-      this.statistics = new Statistics(this.threads);
-      this.throughputController = new ThroughputController(this.threads, this.statistics);
-    });
+    return promise
+      .then(() => this.spawnThreads())
+      .tap(() => console.log('All threads connected'))
+      .then(() => {
+        this.statistics = new Statistics(this.threads);
+        this.throughputController = new ThroughputController(this.threads, this.statistics);
+      });
   }
 
   clearDB() {

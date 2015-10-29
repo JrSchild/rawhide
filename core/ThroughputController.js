@@ -23,13 +23,16 @@ class ThroughputController extends EventEmitter {
     this.initThreads();
   }
 
+  stop() {
+    clearInterval(this.latencyUpdater);
+    clearInterval(this.opsPerSecUpdater);
+  }
+
   reset() {
+    this.stop();
     this.currentLatency = null;
     this.operationsPerSecond = settings.minOperationsPerSecond;
     this.latencies = [];
-    clearInterval(this.latencyUpdater);
-    clearInterval(this.opsPerSecUpdater);
-    this.initThroughputEmitter();
   }
 
   // Start listening to all threads.
@@ -47,7 +50,7 @@ class ThroughputController extends EventEmitter {
    * Collect latencies for 1000ms and adjust operationsPerSecond
    * with a PID Controller to approach targetLatency.
    */
-  initThroughputEmitter() {
+  start() {
     this.pid = new PIDController(0.2, 0, 0.23);
     this.pid.setTarget(settings.targetLatency);
 

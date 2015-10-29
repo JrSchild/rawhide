@@ -10,7 +10,12 @@ var PhaseControl = require('./PhaseControl');
  */
 class ThroughputControllerSteps extends ThroughputController {
 
-  initThroughputEmitter() {
+  start() {
+
+    // Send out an initial amount of operations per seconds.
+    this.operationsPerSecond = settings.operationsPerSecond * this.threads.length;
+    this.emitOperationsPerSecond();
+
     this.latencyUpdater = setInterval(() => {
 
       // If no latencies are recieved and currentLatency has not been set yet. Stop right here.
