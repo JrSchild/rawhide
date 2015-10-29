@@ -25,12 +25,33 @@ class Workload {
     process.on('message', (message) => {
       if (message.type === 'setOperationsPerSecond') {
         this.operationsPerSecond = message.data;
+      } else if (message.type === 'pushOperations') {
+        this.pushOperationsPerSecond(message.data);
       }
     });
   }
 
   run() {
     this.execute('Running', this.parameters.thread.runOperations, this.operationMethod);
+  }
+
+  // Immediately execute a set amount of operations.
+  pushOperationsPerSecond(operations) {
+    this.counter = new LimitCounter(operations, (err) => {
+      if (err) {
+        process({
+          type: 'finishedWithError',
+          err, err
+        });
+        throw err;
+      }
+
+      process.send('finished');
+    });
+
+    while (operations--) {
+      this.operationMethod();
+    }
   }
 
   execute(name, operations, operationMethod) {
