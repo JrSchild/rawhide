@@ -22,7 +22,6 @@ class Spawner {
     }
 
     this.started = true;
-
     this.threadsConnected.then(() => this.throughputController.start());
 
     return true;
