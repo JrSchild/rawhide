@@ -37,10 +37,10 @@ class ThroughputController extends EventEmitter {
 
   // Start listening to all threads.
   initThreads() {
-    this.threads.forEach((thread) => thread.on('message', this.onThreadMessage.bind(this)));
+    this.threads.forEach((thread) => thread.on('message', this.onThreadMessage.bind(this, thread)));
   }
 
-  onThreadMessage(message) {
+  onThreadMessage(thread, message) {
     if (message.type === 'latency') {
       this.setLatency(message.end - message.start);
     }
