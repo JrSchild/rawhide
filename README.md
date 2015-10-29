@@ -4,7 +4,7 @@ A Node.js powered database testing framework. It is slightly based on the YCSB b
 #### Requirements and Installation
 - Node.js 4.1 or higher
 
-Rawhide is not yet published on npm but can be installed globally directly from the repository with: `npm install -g git://github.com/JrSchild/Rawhide.git`. Run `rawhide init project-name` to bootstrap your testcase. Within this directory execute `rawhide run` to start your test.
+Rawhide is not yet published on npm but can be installed globally directly from the repository with: `npm install -g git://github.com/JrSchild/rawhide.git`. Run `rawhide init project-name` to bootstrap your testcase. Within this directory execute `rawhide run` to start your test.
 
 ##### Developing Rawhide
 Right now the way to help developing the framework is to clone the project and `cd` into it. Create a symlink in the binary folder to this project: `ln -s -f $(pwd)/bin/rawhide /usr/local/bin/rawhide`. There is no need to create a test project to run it. From the project folder you can now do `rawhide run` to start it.
