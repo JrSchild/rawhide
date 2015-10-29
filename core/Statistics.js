@@ -26,6 +26,9 @@ class Statistics extends EventEmitter {
 
     this.initThreads();
     this.initLatencyUpdater();
+
+    // Keep an array of results.
+    this.results = [];
   }
 
   // Start listening to all threads.
@@ -85,6 +88,11 @@ class Statistics extends EventEmitter {
         this.emit('queueCount', [Date.now(), _.sum(this.queueCounts)]);
       }, 100);
     }
+  }
+
+  setResult(result) {
+    console.log(`New result: ${result} operations per second.`);
+    this.results.push(result);
   }
 }
 

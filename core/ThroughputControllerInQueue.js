@@ -15,7 +15,7 @@ class ThroughputControllerInQueue extends ThroughputController {
   // Overwrite initThreads so we are sure it's not listening.
   initThreads() {}
 
-  initThroughputEmitter() {
+  start() {
     var phases;
 
     this.queueCount = 0;
@@ -26,6 +26,17 @@ class ThroughputControllerInQueue extends ThroughputController {
 
     this.statistics.on('queueCount', (queueCount) => {
       this.queueCount = queueCount[1];
+
+      if (this.queueCount > last / 2 && !running) {
+        console.log('running!');
+        running = true;
+      }
+      if (this.queueCount === 0 && startTime && running) {
+        finished = Date.now();
+        this.statistics.setResult(last / ((finished - startTime) / 1000));
+        running = false;
+        process.exit();
+      }
     });
     this.statistics.on('executedOperationsPerSecond', (executedOperationsPerSecond) => {
       this.executedOperationsPerSecondQueue.push(executedOperationsPerSecond[1]);
@@ -36,51 +47,28 @@ class ThroughputControllerInQueue extends ThroughputController {
       }
     });
 
-    phases = new PhaseControl('loadQueue', this, true);
+    phases = new PhaseControl('active', this, true);
 
     this.avgOperationsPerSecond = null;
     this.targetQueueSize = null;
 
-    phases.add('loadQueue', {
-      condition() {
-        if (this.queueCount > 40000) {
-          this.lastAvg = this.executedOperationsPerSecondQueue.average();
-          return 'cooldown'
-        }
-        console.log(this.operationsPerSecond, this.executedOperationsPerSecondQueue.average(), this.queueCount);
-      },
-      correction() {
-        return 1000;
-      }
-    });
-
-    phases.add('cooldown', {
-      condition() {
-        console.log('cooling down', this.queueCount, this.lastAvg);
-        if (this.queueCount < this.lastAvg * 5) {
-          this.operationsPerSecond = this.lastAvg;
-          this.executedOperationsPerSecondQueue = new LimitQueue(5);
-          return 'active';
-        }
-      },
-      correction() {
-        return -this.operationsPerSecond;
-      }
-    })
+    var startTime, finished, running;
+    var last = 50000;
 
     phases.add('active', {
-      condition() {},
+      condition() {
+        if (finished) {
+          console.log('finished, cooldown?');
+          finished = null;
+          startTime = null;
+        }
+      },
       correction() {
-        if (this.executedOperationsPerSecondQueue.data.length === 5) {
-          this.queueCountCap = Math.max(this.executedOperationsPerSecondQueue.average() * 10, this.queueCountCap);
+        if (!startTime) {
+          startTime = Date.now();
+          return last;
         }
-        console.log(this.queueCountCap / 10);
-        var change = 500;
-        if (this.queueCount > this.queueCountCap) {
-          change = -200;
-        }
-        console.log('in queue:', this.queueCount, 'ops per sec:', this.operationsPerSecond + change);
-        return change;
+        return -this.operationsPerSecond;
       }
     });
     
@@ -94,7 +82,6 @@ class ThroughputControllerInQueue extends ThroughputController {
       // Update operationsPerSecond, make sure its between min and max value and send out data.
       this.operationsPerSecond += phases.next();
       this.operationsPerSecond = Math.max(0, this.operationsPerSecond);
-      // this.operationsPerSecond = 20000;
       this.emitOperationsPerSecond();
     }, 1000);
   }
