@@ -90,6 +90,7 @@ class Statistics extends EventEmitter {
 
     var model = parameters.threads[0].model;
     var data = {
+      date: new Date(),
       operations: parameters.pushOperations,
       workload: parameters.threads[0].workload,
       results: this.results,
