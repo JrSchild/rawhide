@@ -69,7 +69,10 @@ class Statistics extends EventEmitter {
     }
   }
 
-  // TODO: Make finish async. ThroughputControllerPush can wait for this until exiting program.
+  // TODO: This could be made async. ThroughputControllerPush can wait
+  // for this until exiting program. On the other side who cares, this
+  // is the last thing that needs to happen and the program will close
+  // after this regardless.
   finish() {
     var now = Date.now();
 
@@ -78,7 +81,6 @@ class Statistics extends EventEmitter {
     this.emit('latency', [now, 0]);
 
     var resultPath = path.resolve(process.cwd(), './results');
-    console.log(resultPath);
 
     try {
       fs.mkdirSync(resultPath);
