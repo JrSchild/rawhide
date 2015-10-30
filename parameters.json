@@ -2,6 +2,8 @@
   "database": "MongoDB",
   "loadRecords": 1e5,
   "cleanupAutomatically": false,
+  "pushOperations": 100000,
+  "pushCycles": 5,
   "threads": [
     {
       "workload": "BasicWorkload",
