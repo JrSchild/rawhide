@@ -66,7 +66,7 @@ chart = $('#latencyChart').highcharts({
     data: []
   }, {
     name: 'Executed operations per second',
-    type: 'spline',
+    type: 'area',
     yAxis: 1,
     data: []
   }]
