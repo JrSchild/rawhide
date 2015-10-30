@@ -2,8 +2,11 @@
 
 var EventEmitter = require('events');
 var _ = require('lodash');
+var loader = require('./lib/loader');
 var PIDController = require('./PIDController');
 var settings = require('../settings.json');
+var parameters = loader('./parameters.json');
+
 
 /**
  * This class is used to control the number of operations per second
@@ -21,6 +24,7 @@ class ThroughputController extends EventEmitter {
     this.statistics = statistics;
     this.reset();
     this.initThreads();
+    this.parameters = parameters;
   }
 
   stop() {
