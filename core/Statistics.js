@@ -1,8 +1,12 @@
 'use strict'
 
-var _ = require('lodash');
 var EventEmitter = require('events');
+var fs = require('fs');
+var path = require('path');
+var _ = require('lodash');
+var loader = require('./lib/loader');
 var settings = require('../settings.json');
+var parameters = loader('./parameters.json')
 
 /**
  * For now this class simply intercepts statistics and allows other classes
@@ -65,6 +69,42 @@ class Statistics extends EventEmitter {
     }
   }
 
+  // TODO: Make finish async. ThroughputControllerPush can wait for this until exiting program.
+  finish() {
+    var now = Date.now();
+
+    this.emit('executedOperationsPerSecond', [now, 0]);
+    this.emit('queueCount', [now, 0]);
+    this.emit('latency', [now, 0]);
+
+    var resultPath = path.resolve(process.cwd(), './results');
+    console.log(resultPath);
+
+    try {
+      fs.mkdirSync(resultPath);
+    } catch (error) {
+      if (error.code !== 'EEXIST') throw error;
+    }
+
+    var model = parameters.threads[0].model;
+    var data = {
+      operations: parameters.pushOperations,
+      workload: parameters.threads[0].workload,
+      results: this.results,
+      average: _.sum(this.results) / this.results.length
+    };
+
+    var resultsLatest = Statistics.requireOrCreate(resultPath + '/results.latest.json');
+    var resultsAll = Statistics.requireOrCreate(resultPath + '/results.all.json');
+
+    resultsLatest[model] = data;
+    resultsAll[model] = resultsAll[model] || [];
+    resultsAll[model].push(data);
+
+    fs.writeFileSync(resultPath + '/results.latest.json', JSON.stringify(resultsLatest, undefined, 2));
+    fs.writeFileSync(resultPath + '/results.all.json', JSON.stringify(resultsAll, undefined, 2));
+  }
+
   initLatencyUpdater() {
     setInterval(() => {
       var length;
@@ -97,6 +137,14 @@ class Statistics extends EventEmitter {
   setResult(result) {
     console.log(`New result: ${result} operations per second.`);
     this.results.push(result);
+  }
+  
+  static requireOrCreate(path, otherwise) {
+    try {
+      return require(path);
+    } catch (error) {
+      return otherwise || {};
+    }
   }
 }
 
