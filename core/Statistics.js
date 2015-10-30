@@ -39,7 +39,7 @@ class Statistics extends EventEmitter {
   onThreadMessage(message) {
     if (message.type === 'latency') {
       this.latencies.push(message.end - message.start);
-      this.updateOpsPerSec(message);
+      this.updateOpsPerSec(message.end);
     } else if (message.type === 'queueCount') {
       this.queueCounts[message.pid] = message.data;
       this.updateQueueCount();
@@ -47,10 +47,10 @@ class Statistics extends EventEmitter {
   }
 
   // Keep a hashmap per second with a counter as value.
-  updateOpsPerSec(message) {
-    var key = ~~(message.end / 1000);
+  updateOpsPerSec(time, skipIncrement) {
+    var key = ~~(time / 1000);
 
-    if (this.operationsPerSecond[key]) {
+    if (this.operationsPerSecond[key] && !skipIncrement) {
       return this.operationsPerSecond[key]++;
     }
 
@@ -60,12 +60,16 @@ class Statistics extends EventEmitter {
     }
 
     // Start the new seconds-data. Cleanup previous value (for now).
-    this.operationsPerSecond = { [key]: 1 };
+    if (!this.operationsPerSecond[key]) {
+      this.operationsPerSecond = { [key]: skipIncrement ? 0 : 1 };
+    }
   }
 
   initLatencyUpdater() {
     setInterval(() => {
       var length;
+
+      this.updateOpsPerSec(Date.now(), true);
 
       // If no latencies are recieved send out null.
       if (!(length = this.latencies.length)) {
