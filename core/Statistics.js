@@ -88,11 +88,11 @@ class Statistics extends EventEmitter {
       if (error.code !== 'EEXIST') throw error;
     }
 
-    var model = parameters.threads[0].model;
+    var model = parameters.thread.model;
     var data = {
       date: new Date(),
       operations: parameters.pushOperations,
-      workload: parameters.threads[0].workload,
+      workload: parameters.thread.workload,
       results: this.results,
       average: _.sum(this.results) / this.results.length
     };
