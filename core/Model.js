@@ -14,12 +14,12 @@ class Model {
   }
 
   connect() {
-    if (!this.adapters[this.parameters.settings.database]) {
+    if (!this.adapters[this.parameters.database]) {
       throw new Error('AdapterNotSetError');
     }
 
     // TODO: Move connecting to adapter.
-    this.adapter = new (loader(`./adapters/${this.adapters[this.parameters.settings.database]}`))(this);
+    this.adapter = new (loader(`./adapters/${this.adapters[this.parameters.database]}`))(this);
 
     return this.adapter.connect();
   }

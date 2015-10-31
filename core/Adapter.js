@@ -13,7 +13,7 @@ class Adapter {
     this.model = model;
     this.parameters = model.parameters;
 
-    var DB = loader(`./databases/${this.parameters.settings.database}`);
+    var DB = loader(`./databases/${this.parameters.database}`);
 
     // Copy over the methods of the DB class as sort of 'composition'.
     Object.getOwnPropertyNames(DB.prototype).forEach((method) => {

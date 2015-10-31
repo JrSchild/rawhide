@@ -55,10 +55,7 @@ class Spawner {
     resolverConnected.promise.catch(console.error);
 
     // Initialize the client with settings and add to list of threads.
-    this.sendToProcess('init', {
-      thread: this.parameters.thread,
-      settings: this.parameters
-    })(process);
+    this.sendToProcess('init', this.parameters)(process);
     this.threads.push(process);
     this.threadsConnected.push(resolverConnected.promise);
   }
