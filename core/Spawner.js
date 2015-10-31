@@ -7,11 +7,11 @@ var Promise = require('bluebird');
 var loader = require('./lib/loader');
 var ThroughputController = require('./ThroughputControllerPush');
 var Statistics = require('./Statistics');
-var globalSettings = require('../settings.json');
+var settings = require('../settings.json');
 
 class Spawner {
-  constructor(settings) {
-    this.settings = settings;
+  constructor(parameters) {
+    this.parameters = parameters;
     this.threads = [];
     this.threadsConnected = [];
   }
@@ -30,7 +30,7 @@ class Spawner {
   spawnThreads() {
     console.log('Spawning threads');
 
-    _.times(this.settings.thread.multiply || 1, () => this.spawnThread());
+    _.times(this.parameters.thread.multiply || 1, () => this.spawnThread());
 
     // this.threadsConnected is an array of promises. Turn it into one promise to be resolved.
     return (this.threadsConnected = Promise.all(this.threadsConnected));
@@ -56,8 +56,8 @@ class Spawner {
 
     // Initialize the client with settings and add to list of threads.
     this.sendToProcess('init', {
-      thread: this.settings.thread,
-      settings: this.settings
+      thread: this.parameters.thread,
+      settings: this.parameters
     })(process);
     this.threads.push(process);
     this.threadsConnected.push(resolverConnected.promise);
@@ -76,7 +76,7 @@ class Spawner {
   connect() {
     var promise = Promise.resolve();
 
-    if (globalSettings.preTruncate) {
+    if (settings.preTruncate) {
       console.log('Clearing database');
 
       promise = this.clearDB();
@@ -92,7 +92,7 @@ class Spawner {
   }
 
   clearDB() {
-    var db = new (loader(`./databases/${this.settings.database}`))();
+    var db = new (loader(`./databases/${this.parameters.database}`))();
 
     return db.connect().then(db.clearDB.bind(db));
   }
