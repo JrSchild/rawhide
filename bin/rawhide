@@ -14,11 +14,13 @@ var argv = require('yargs')
     .command('link', 'Symlinks the global rawhide installation into the node_modules directory.')
     .command('unlink', 'Unlinks rawhide installation from your node_modules directory.')
     .command('add', 'Add a model, adapter or database to your testcase.')
+    .command('stat', 'Print an overview of the (latest) collected statistics.')
     .alias('s', 'start')
     .describe('start', 'Start the test immediately.')
     .demand(1).argv;
 var inquirer = require('inquirer');
 var path = require('path');
+var _ = require('lodash');
 var rawhideDir = path.resolve(__dirname, '../');
 
 // Create a standard test scenario.
@@ -114,6 +116,48 @@ if (argv._[0] === 'add') {
       fs.writeFileSync(`./${fromFile[0]}/${name}.js`, file.replace(new RegExp(fromFile[1], 'g'), name));
     });
   });
+}
+
+if (argv._[0] === 'stat') {
+  var results;
+
+  try {
+    results = fs.readFileSync(path.resolve(process.cwd(), './results/results.latest.json'), 'utf8');
+    results = JSON.parse(results);
+  } catch (e) {
+    if (e instanceof SyntaxError) {
+      console.error('The JSON file is corrupt, please fix it.');
+    } else if (e.code === 'ENOENT') {
+      console.error('There are no statistics written yet.');
+    } else {
+      console.error(e);
+    }
+    process.exit();
+  }
+
+  var table = Object.keys(results)
+    .map((model) => {
+      var data = results[model];
+
+      return [model, `${data.operations}`, `${~~data.average}`];
+    })
+    .sort((a, b) => ~~a[2] < ~~b[2]);
+  table.unshift(['Model', 'Operations', 'Average']);
+
+  // Find highest length in each column.
+  var highest = _.unzip(table).map((column) => {
+    return _.reduce(column, (curr, cell) => Math.max(curr, cell.length), 0);
+  });
+
+  table = table.map((row) => {
+    return row.map((cell, cellI) => {
+      return cell + Array(highest[cellI] - cell.length + 1).join(' ');
+    }).join(' ');
+  });
+
+  console.log(table.join('\n'));
+
+  return;
 }
 
 /**
