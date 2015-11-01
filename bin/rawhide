@@ -23,11 +23,26 @@ var path = require('path');
 var _ = require('lodash');
 var rawhideDir = path.resolve(__dirname, '../');
 
+var methods = {
+  init,
+  run,
+  link,
+  unlink,
+  add,
+  stat
+};
+
+if (argv._[0] && methods[argv._[0]]) {
+  return methods[argv._[0]]();
+}
+console.log('Invalid command');
+
 // Create a standard test scenario.
-if (argv._[0] === 'init') {
+function init() {
   if (!argv._[1]) {
     return console.error('Please specify a name');
   }
+
   var targetDir = `./${argv._[1]}`;
 
   if (existsSync(targetDir)) {
@@ -55,45 +70,45 @@ if (argv._[0] === 'init') {
 
   createSymlinkSyncToGlobal(targetDir);
 
-  return console.log(`Initialized project ${argv._[1]}.`);
+  console.log(`Initialized project ${argv._[1]}.`);
 }
 
 // Run the test case from the current directory.
 // TODO: Maybe add extra checks to make sure it's
 // a valid rawhide test case?
-if (argv._[0] === 'run') {
-  return require(`${rawhideDir}/index.js`)
+function run() {
+  require(`${rawhideDir}/index.js`)
     .then((spawner) => argv.start && spawner.start());
 }
 
 // Create a symlink in the current project to the
 // rawhide framework.
-if (argv._[0] === 'link') {
+function link() {
   createSymlinkSyncToGlobal('./');
 
-  return console.log('Linked the Rawhide project into your node_modules directory');
+  console.log('Linked the Rawhide project into your node_modules directory');
 }
 
 // Create a symlink in the current project to the
 // rawhide framework.
-if (argv._[0] === 'unlink') {
+function unlink() {
   var to = path.resolve('./node_modules/rawhide');
 
   if (existsSync(to)) {
     fs.unlinkSync(to);
   }
 
-  return console.log('Removed the Rawhide project from your node_modules directory');
+  console.log('Removed the Rawhide project from your node_modules directory');
 }
 
 // Add a model or adapter through the CLI. Just a quick pieve, this could be cleaner.
-if (argv._[0] === 'add') {
+function add() {
   var supported = {
     'Model': [`models/`, 'BasicModel'],
     'Adapter': [`adapters/`, 'MongoDBBasicAdapter']
   };
 
-  return inquirer.prompt([{
+  inquirer.prompt([{
     name: 'value',
     type: 'list',
     message: 'What would you like to add?',
@@ -118,7 +133,7 @@ if (argv._[0] === 'add') {
   });
 }
 
-if (argv._[0] === 'stat') {
+function stat() {
   var results;
 
   try {
@@ -156,8 +171,6 @@ if (argv._[0] === 'stat') {
   });
 
   console.log(table.join('\n'));
-
-  return;
 }
 
 /**
