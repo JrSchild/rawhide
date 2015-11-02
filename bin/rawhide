@@ -154,7 +154,7 @@ function stat() {
     process.exit();
   }
 
-  // Remove flaws (lowest and hihgest measurement).
+  // Remove flaws (lowest and highest measurement).
   if (argv.flaw) {
     _.each(results, (data) => {
       var lowest = _.min(data.results);
