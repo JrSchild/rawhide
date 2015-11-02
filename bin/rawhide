@@ -16,7 +16,9 @@ var argv = require('yargs')
     .command('add', 'Add a model, adapter or database to your testcase.')
     .command('stat', 'Print an overview of the (latest) collected statistics.')
     .alias('s', 'start')
+    .alias('f', 'flaw')
     .describe('start', 'Start the test immediately.')
+    .describe('flaw', 'Remove flaws from the statistics, (lowest and highest measurement)')
     .demand(1).argv;
 var inquirer = require('inquirer');
 var path = require('path');
@@ -152,14 +154,25 @@ function stat() {
     process.exit();
   }
 
+  // Remove flaws (lowest and hihgest measurement).
+  if (argv.flaw) {
+    _.each(results, (data) => {
+      var lowest = _.min(data.results);
+      var highest = _.max(data.results);
+
+      data.results = data.results.filter((i) => i !== lowest && i !== highest);
+      data.average = _.sum(data.results) / data.results.length;
+    });
+  }
+
   var table = Object.keys(results)
     .map((model) => {
       var data = results[model];
 
-      return [model, `${data.operations}`, `${~~data.average}`];
+      return [model, `${data.operations}`, `${data.results.length}`, `${~~data.average}`];
     })
     .sort((a, b) => ~~a[2] < ~~b[2]);
-  table.unshift(['Model', 'Operations', 'Average']);
+  table.unshift(['Model', 'Operations', 'Cycles', 'Average']);
 
   // Find highest length in each column.
   var highest = _.unzip(table).map((column) => {
