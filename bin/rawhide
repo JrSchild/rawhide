@@ -133,6 +133,8 @@ function add() {
   });
 }
 
+// TODO; Add a description to models and print at the end of the line. If the the line is
+// full; skip to the next line. Use process.stdout.getWindowSize() to detect size.
 function stat() {
   var results;
 
