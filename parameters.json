@@ -1,19 +1,15 @@
 {
   "database": "MongoDB",
-  "loadRecords": 1e5,
-  "cleanupAutomatically": false,
-  "pushOperations": 100000,
-  "pushCycles": 5,
+  "operations": 100000,
+  "cycles": 5,
   "thread": {
     "workload": "BasicWorkload",
     "model": "BasicModel",
     "tableName": "table",
-    "fieldCount": 10,
     "multiply": 4,
     "proportions": {
       "WRITE": 0.99,
       "READ": 0.00
-    },
-    "runOperations": 1e8
+    }
   }
 }

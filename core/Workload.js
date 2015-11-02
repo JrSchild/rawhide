@@ -32,7 +32,7 @@ class Workload {
   }
 
   run() {
-    this.execute('Running', this.parameters.thread.runOperations, this.operationMethod);
+    this.execute('Running', this.parameters.operations, this.operationMethod);
   }
 
   // Immediately execute a set amount of operations.

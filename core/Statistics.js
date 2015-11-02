@@ -91,7 +91,7 @@ class Statistics extends EventEmitter {
     var model = parameters.thread.model;
     var data = {
       date: new Date(),
-      operations: parameters.pushOperations,
+      operations: parameters.operations,
       workload: parameters.thread.workload,
       results: this.results,
       average: _.sum(this.results) / this.results.length

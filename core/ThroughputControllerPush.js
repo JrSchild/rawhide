@@ -31,12 +31,12 @@ class ThroughputControllerPush extends ThroughputController {
     if (!options) {
       options = {
         current: 1,
-        pushCycles: this.parameters.pushCycles || 1,
-        operations: this.parameters.pushOperations
+        cycles: this.parameters.cycles || 1,
+        operations: this.parameters.operations
       };
     }
 
-    console.log(`Running cycle ${options.current}/${options.pushCycles}`);
+    console.log(`Running cycle ${options.current}/${options.cycles}`);
 
     this.workingThreadsMap = _.transform(this.threads, (result, thread) => {
       result[thread.pid] = Promise.pending();
@@ -53,7 +53,7 @@ class ThroughputControllerPush extends ThroughputController {
         this.statistics.setResult(options.operations / ((Date.now() - started) / 1000));
       })
       .then(() => {
-        if (options.current++ < options.pushCycles) {
+        if (options.current++ < options.cycles) {
           return Promise.delay(5000);
         }
         this.statistics.finish();
