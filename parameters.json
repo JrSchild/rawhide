@@ -2,6 +2,7 @@
   "database": "MongoDB",
   "operations": 100000,
   "cycles": 5,
+  "cycleCooldown": 5000,
   "thread": {
     "workload": "BasicWorkload",
     "model": "BasicModel",
