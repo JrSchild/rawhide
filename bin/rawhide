@@ -171,7 +171,7 @@ function stat() {
 
       return [model, `${data.operations}`, `${data.results.length}`, `${~~data.average}`];
     })
-    .sort((a, b) => ~~a[2] < ~~b[2]);
+    .sort((a, b) => ~~a[3] < ~~b[3]);
   table.unshift(['Model', 'Operations', 'Cycles', 'Average']);
 
   // Find highest length in each column.
