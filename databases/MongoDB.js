@@ -3,15 +3,17 @@
 var _ = require('lodash');
 var Q = require('q');
 var MongoClient = require('mongodb').MongoClient;
-var DBSettings = require('../database.json').MongoDB;
+var globalDBSettings = require('../database.json').MongoDB;
 
 /**
  * Connector class for MongoDB. Can also ask for index memory and stuff like that.
  * Methods are all generic, they do not depend on Model implementation.
  */
 class MongoDB {
-  connect(/*overwrites*/) {
-    var url = `mongodb://${DBSettings.host}:${DBSettings.port}/${DBSettings.database}`;
+  connect(settings) {
+    settings = _.merge(_.clone(globalDBSettings), settings);
+
+    var url = `mongodb://${settings.host}:${settings.port}/${settings.database}`;
 
     return Q.ninvoke(MongoClient, 'connect', url).then((db) => {
       this.db = db;
