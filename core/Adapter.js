@@ -27,11 +27,11 @@ class Adapter {
   connect(connectFn) {
     return connectFn.call(this)
       .then(() => this.createTable())
-      .then(() => process.send({
+      .then(() => process.send && process.send({
         type: 'connected'
       }))
       .catch((err) => {
-        process.send({
+        process.send && process.send({
           type: 'errorConnecting',
           data: err
         });
@@ -41,7 +41,7 @@ class Adapter {
   }
 
   createTable() {
-    throw new Error('Create table not Implemented');
+    return null;
   }
 }
 
