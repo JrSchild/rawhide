@@ -169,10 +169,10 @@ function stat() {
     .map((model) => {
       var data = results[model];
 
-      return [model, `${data.operations}`, `${data.results.length}`, `${~~data.average}`];
+      return [model, `${data.operations}`, `${data.results.length}`, `${~~data.average}`, `${~~data.storageSize}`, `${~~data.indexSize}`];
     })
     .sort((a, b) => ~~a[3] < ~~b[3]);
-  table.unshift(['Model', 'Operations', 'Cycles', 'Average']);
+  table.unshift(['Model', 'Operations', 'Cycles', 'Average', 'Storage Size', 'Index Size']);
 
   // Find highest length in each column.
   var highest = _.unzip(table).map((column) => {
@@ -182,7 +182,7 @@ function stat() {
   table = table.map((row) => {
     return row.map((cell, cellI) => {
       return cell + Array(highest[cellI] - cell.length + 1).join(' ');
-    }).join(' ');
+    }).join('  ');
   });
 
   console.log(table.join('\n'));
