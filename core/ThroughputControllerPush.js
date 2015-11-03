@@ -56,12 +56,12 @@ class ThroughputControllerPush extends ThroughputController {
         if (options.current++ < options.cycles) {
           return Promise.delay(this.parameters.cycleCooldown);
         }
-        this.statistics.finish();
 
-        return Promise.reject();
+        return this.statistics.finish()
+          .then(() => Promise.delay(1000))
+          .then(() => process.exit());
       })
-      .then(() => this.start(options))
-      .catch(() => setTimeout(() => process.exit(), 1000));
+      .then(() => this.start(options));
   }
 }
 

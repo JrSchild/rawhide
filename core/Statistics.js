@@ -103,12 +103,17 @@ class Statistics extends EventEmitter {
     var resultsLatest = Statistics.requireOrCreate(resultPath + '/results.latest.json');
     var resultsAll = Statistics.requireOrCreate(resultPath + '/results.all.json');
 
-    resultsLatest[model] = data;
-    resultsAll[model] = resultsAll[model] || [];
-    resultsAll[model].push(data);
+    return this.db.stats()
+      .then((stats) => {
+        _.merge(data, stats);
 
-    fs.writeFileSync(resultPath + '/results.latest.json', JSON.stringify(resultsLatest, undefined, 2));
-    fs.writeFileSync(resultPath + '/results.all.json', JSON.stringify(resultsAll, undefined, 2));
+        resultsLatest[model] = data;
+        resultsAll[model] = resultsAll[model] || [];
+        resultsAll[model].push(data);
+
+        fs.writeFileSync(resultPath + '/results.latest.json', JSON.stringify(resultsLatest, undefined, 2));
+        fs.writeFileSync(resultPath + '/results.all.json', JSON.stringify(resultsAll, undefined, 2));
+      });
   }
 
   initLatencyUpdater() {

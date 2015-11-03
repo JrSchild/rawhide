@@ -1,5 +1,6 @@
 'use strict'
 
+var _ = require('lodash');
 var Q = require('q');
 var MongoClient = require('mongodb').MongoClient;
 var DBSettings = require('../database.json').MongoDB;
@@ -23,9 +24,15 @@ class MongoDB {
     return Q.ninvoke(this.db, 'dropDatabase');
   }
 
-  getIndexMemory() {}
-
-  getDiskSize() {}
+  /**
+   * Should return the following statistics:
+   * storageSize<Int>: The total amount of storage allocated for the database.
+   * indexSize<Int>:   The total size of all indexes for the database.
+   */
+  stats() {
+    return this.db.stats()
+      .then((stats) => _.pick(stats, 'storageSize', 'indexSize'));
+  }
 }
 
 module.exports = MongoDB;
