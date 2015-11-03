@@ -41,10 +41,6 @@ if (argv._[0] && methods[argv._[0]]) {
 }
 console.log('Invalid command');
 
-function version() {
-  console.log(require(path.resolve(rawhideDir, './package.json')).version);
-}
-
 // Create a standard test scenario.
 function init() {
   if (!argv._[1]) {
@@ -192,6 +188,10 @@ function stat() {
   });
 
   console.log(table.join('\n'));
+}
+
+function version() {
+  console.log(require(path.resolve(rawhideDir, './package.json')).version);
 }
 
 /**
