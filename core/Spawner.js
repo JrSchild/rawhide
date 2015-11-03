@@ -84,14 +84,15 @@ class Spawner {
       .tap(() => console.log('All threads connected'))
       .then(() => {
         this.statistics = new Statistics(this.threads);
-        this.throughputController = new ThroughputController(this.threads, this.statistics);
+        this.throughputController = new ThroughputController(this);
       });
   }
 
   clearDB() {
-    var db = new (loader(`./databases/${this.parameters.database}`))();
+    this.db = new (loader(`./databases/${this.parameters.database}`))();
 
-    return db.connect().then(db.clearDB.bind(db));
+    return this.db.connect()
+      .then(() => this.db.clearDB());
   }
 }
 

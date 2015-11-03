@@ -18,10 +18,11 @@ var parameters = loader('./parameters.json');
  * incrementally use steps to increase the throughput over time.
  */
 class ThroughputController extends EventEmitter {
-  constructor(threads, statistics) {
+  constructor(spawner) {
     super();
-    this.threads = threads;
-    this.statistics = statistics;
+    this.threads = spawner.threads;
+    this.statistics = spawner.statistics;
+    this.db = spawner.db;
     this.reset();
     this.initThreads();
     this.parameters = parameters;
