@@ -22,7 +22,6 @@ class ThroughputController extends EventEmitter {
     super();
     this.threads = spawner.threads;
     this.statistics = spawner.statistics;
-    this.db = spawner.db;
     this.reset();
     this.initThreads();
     this.parameters = parameters;
