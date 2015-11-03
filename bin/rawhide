@@ -15,6 +15,7 @@ var argv = require('yargs')
     .command('unlink', 'Unlinks rawhide installation from your node_modules directory.')
     .command('add', 'Add a model, adapter or database to your testcase.')
     .command('stat', 'Print an overview of the (latest) collected statistics.')
+    .command('version', 'Print the version number.')
     .alias('s', 'start')
     .alias('f', 'flaw')
     .describe('start', 'Start the test immediately.')
@@ -31,13 +32,18 @@ var methods = {
   link,
   unlink,
   add,
-  stat
+  stat,
+  version
 };
 
 if (argv._[0] && methods[argv._[0]]) {
   return methods[argv._[0]]();
 }
 console.log('Invalid command');
+
+function version() {
+  console.log(require(path.resolve(rawhideDir, './package.json')).version);
+}
 
 // Create a standard test scenario.
 function init() {
