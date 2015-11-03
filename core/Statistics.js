@@ -14,9 +14,12 @@ var parameters = loader('./parameters.json')
  * but it will defintely be necessary.
  */
 class Statistics extends EventEmitter {
-  constructor(threads) {
+  constructor(spawner) {
     super();
-    this.threads = threads;
+    this.threads = spawner.threads;
+
+    // Required to retrieve extra statistics on collection through db instance.
+    this.db = spawner.db;
 
     // Keep latencies in ms until cleared, defined by settings.updateLatencyInterval.
     this.latencies = [];

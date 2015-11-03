@@ -83,7 +83,7 @@ class Spawner {
       .then(() => this.spawnThreads())
       .tap(() => console.log('All threads connected'))
       .then(() => {
-        this.statistics = new Statistics(this.threads);
+        this.statistics = new Statistics(this);
         this.throughputController = new ThroughputController(this);
       });
   }
