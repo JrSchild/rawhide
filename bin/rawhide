@@ -25,6 +25,7 @@ var inquirer = require('inquirer');
 var path = require('path');
 var _ = require('lodash');
 var rawhideDir = path.resolve(__dirname, '../');
+var bytes = require('bytes');
 
 var methods = {
   init,
@@ -175,7 +176,7 @@ function stat() {
     .map((model) => {
       var data = results[model];
 
-      return [model, `${data.operations * data.results.length}`, `${data.results.length}`, `${~~data.average}`, `${~~data.size}`, `${~~data.totalIndexSize}`, `${data.count}`, `${data.avgObjSize}`, `${~~data.storageSize}`];
+      return [model, `${data.operations * data.results.length}`, `${data.results.length}`, `${~~data.average}`, bytes(data.size), bytes(data.totalIndexSize), `${data.count}`, bytes(data.avgObjSize), bytes(data.storageSize)];
     })
     .sort((a, b) => ~~a[3] < ~~b[3]);
   table.unshift(['Model', 'Operations', 'Cycles', 'Ops/Sec', 'Size', 'Index Size', '# Documents', 'Avg document size', 'Storage Size']);
