@@ -39,10 +39,6 @@ class Workload {
   pushOperationsPerSecond(operations) {
     this.counter = new LimitCounter(operations, (err) => {
       if (err) {
-        process({
-          type: 'finishedWithError',
-          err, err
-        });
         throw err;
       }
 
