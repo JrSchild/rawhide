@@ -30,13 +30,17 @@ class Spawner {
   spawnThreads() {
     console.log('Spawning threads');
 
-    _.times(this.parameters.thread.multiply || 1, () => this.spawnThread());
+    // Also send the start time of when the threads are spanwed to each thread.
+    // Useful for unique generation of objectIds as date in combination with thread number.
+    this.startTime = Date.now();
+
+    _.times(this.parameters.thread.multiply || 1, (id) => this.spawnThread(id));
 
     // this.threadsConnected is an array of promises. Turn it into one promise to be resolved.
     return (this.threadsConnected = Promise.all(this.threadsConnected));
   }
 
-  spawnThread() {
+  spawnThread(id) {
     var resolverConnected = Promise.pending();
     var process = fork(path.resolve(__dirname, '../worker.js'));
 
@@ -55,7 +59,10 @@ class Spawner {
     resolverConnected.promise.catch(console.error);
 
     // Initialize the client with settings and add to list of threads.
-    this.sendToProcess('init', this.parameters)(process);
+    this.sendToProcess('init', _.merge({
+      id: id,
+      start: this.startTime
+    }, this.parameters))(process);
     this.threads.push(process);
     this.threadsConnected.push(resolverConnected.promise);
   }
