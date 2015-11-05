@@ -159,11 +159,15 @@ function stat() {
   // Remove flaws (lowest and highest measurement).
   if (argv.flaw) {
     _.each(results, (data) => {
+      if (data.results.length < 3) {
+        return;
+      }
+
       var lowest = _.min(data.results);
       var highest = _.max(data.results);
 
-      data.results = data.results.filter((i) => i !== lowest && i !== highest);
-      data.average = _.sum(data.results) / data.results.length;
+      var average = data.results.filter((i) => i !== lowest && i !== highest);
+      data.average = _.sum(average) / average.length;
     });
   }
 
@@ -171,10 +175,10 @@ function stat() {
     .map((model) => {
       var data = results[model];
 
-      return [model, `${data.operations}`, `${data.results.length}`, `${~~data.average}`, `${~~data.storageSize}`, `${~~data.indexSize}`];
+      return [model, `${data.operations * data.results.length}`, `${data.results.length}`, `${~~data.average}`, `${~~data.size}`, `${~~data.totalIndexSize}`, `${data.count}`, `${data.avgObjSize}`, `${~~data.storageSize}`];
     })
     .sort((a, b) => ~~a[3] < ~~b[3]);
-  table.unshift(['Model', 'Operations', 'Cycles', 'Average', 'Storage Size', 'Index Size']);
+  table.unshift(['Model', 'Operations', 'Cycles', 'Ops/Sec', 'Size', 'Index Size', '# Documents', 'Avg document size', 'Storage Size']);
 
   // Find highest length in each column.
   var highest = _.unzip(table).map((column) => {

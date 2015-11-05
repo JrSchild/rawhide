@@ -4,6 +4,8 @@ var _ = require('lodash');
 var Q = require('q');
 var MongoClient = require('mongodb').MongoClient;
 var globalDBSettings = require('../database.json').MongoDB;
+var loader = require('../core/lib/loader');
+var parameters = loader('parameters.json');
 
 /**
  * Connector class for MongoDB. Can also ask for index memory and stuff like that.
@@ -32,8 +34,8 @@ class MongoDB {
    * indexSize<Int>:   The total size of all indexes for the database.
    */
   stats() {
-    return this.db.stats()
-      .then((stats) => _.pick(stats, 'storageSize', 'indexSize'));
+    return this.db.collection(parameters.thread.tableName).stats()
+      .then((stats) => _.pick(stats, 'size', 'totalIndexSize', 'count', 'avgObjSize', 'storageSize'));
   }
 }
 
