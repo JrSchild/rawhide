@@ -36,6 +36,10 @@ class Spawner {
 
     _.times(this.parameters.thread.multiply || 1, (id) => this.spawnThread(id));
 
+    process.on('exit', () => {
+      this.threads.forEach((thread) => thread.kill());
+    });
+
     // this.threadsConnected is an array of promises. Turn it into one promise to be resolved.
     return (this.threadsConnected = Promise.all(this.threadsConnected));
   }
