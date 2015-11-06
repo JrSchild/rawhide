@@ -34,6 +34,10 @@ class Model {
       end
     });
   }
+
+  createTable() {
+    return null;
+  }
 }
 
 module.exports = Model;

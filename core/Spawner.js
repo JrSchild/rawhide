@@ -82,13 +82,21 @@ class Spawner {
   }
 
   connect() {
-    var promise = Promise.resolve();
+    var promise;
+
+    this.model = new (loader(`./models/${this.parameters.thread.model}`))(this.parameters);
+    promise = this.model.connect();
+    this.db = this.model.adapter;
 
     if (settings.preTruncate) {
       console.log('Clearing database');
 
-      promise = this.clearDB();
+      promise = promise
+        .then(() => this.db.clearDB());
     }
+
+    promise = promise
+      .then(() => this.model.createTable())
 
     return promise
       .then(() => this.spawnThreads())
@@ -97,13 +105,6 @@ class Spawner {
         this.statistics = new Statistics(this);
         this.throughputController = new ThroughputController(this);
       });
-  }
-
-  clearDB() {
-    this.db = new (loader(`./databases/${this.parameters.database}`))();
-
-    return this.db.connect()
-      .then(() => this.db.clearDB());
   }
 }
 

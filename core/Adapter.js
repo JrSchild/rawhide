@@ -28,7 +28,6 @@ class Adapter {
     var args = Array.prototype.slice.call(arguments, 1);
 
     return connectFn.apply(this, args)
-      .then(() => this.createTable())
       .then(() => process.send && process.send({
         type: 'connected'
       }))
