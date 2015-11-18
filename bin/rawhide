@@ -64,12 +64,12 @@ function init() {
   fse.copySync(`${rawhideDir}/models/BasicModel.js`, `${targetDir}/models/BasicModel.js`);
   fse.copySync(`${rawhideDir}/workloads/BasicWorkload.js`, `${targetDir}/workloads/BasicWorkload.js`);
   fse.writeJSONSync(`${targetDir}/package.json`, {
-    name: "rawhide-test-case",
-    version: "0.0.0",
-    author: "",
-    description: "",
+    name: 'rawhide-test-case',
+    version: '0.0.0',
+    author: '',
+    description: '',
     scripts: {
-      postinstall: "rawhide link"
+      postinstall: 'rawhide link'
     }
   });
 
