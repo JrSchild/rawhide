@@ -87,7 +87,9 @@ class Statistics extends EventEmitter {
 
     Statistics.ensureDirSync(resultPath);
 
-    var model = parameters.thread.model;
+    // Load the Model and check if it has a static name method. Use that, otherwise use the real name.
+    var model = loader(`./models/${parameters.thread.model}`);
+    model = _.isFunction(model.name) && model.name() || parameters.thread.model;
     var data = {
       date: new Date(),
       operations: parameters.operations,
