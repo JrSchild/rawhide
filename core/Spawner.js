@@ -46,13 +46,13 @@ class Spawner {
 
   spawnThread(id) {
     var resolverConnected = Promise.pending();
-    var process = fork(path.resolve(__dirname, '../worker.js'));
+    var child = fork(path.resolve(__dirname, '../worker.js'), process.argv.slice(2));
 
     // TODO: Imporove error handling.
-    process.on('error', (error) => {});
+    child.on('error', (error) => {});
 
     // When process is connected
-    process.on('message', (message) => {
+    child.on('message', (message) => {
       if (message.type === 'connected') {
         resolverConnected.resolve();
       } else if (message.type === 'errorConnecting') {
@@ -66,8 +66,8 @@ class Spawner {
     this.sendToProcess('init', _.merge({
       id: id,
       start: this.startTime
-    }, this.parameters))(process);
-    this.threads.push(process);
+    }, this.parameters))(child);
+    this.threads.push(child);
     this.threadsConnected.push(resolverConnected.promise);
   }
 
@@ -78,7 +78,7 @@ class Spawner {
   sendToProcess(type, data) {
     var command = _.defaults({type, data}, {data: null});
 
-    return (process) => process.send(command);
+    return (child) => child.send(command);
   }
 
   connect() {
