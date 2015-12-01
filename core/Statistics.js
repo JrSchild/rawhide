@@ -85,11 +85,7 @@ class Statistics extends EventEmitter {
 
     var resultPath = path.resolve(process.cwd(), './results');
 
-    try {
-      fs.mkdirSync(resultPath);
-    } catch (error) {
-      if (error.code !== 'EEXIST') throw error;
-    }
+    Statistics.ensureDirSync(resultPath);
 
     var model = parameters.thread.model;
     var data = {
@@ -155,6 +151,14 @@ class Statistics extends EventEmitter {
       return require(path);
     } catch (error) {
       return otherwise || {};
+    }
+  }
+
+  static ensureDirSync(dirPath) {
+    try {
+      fs.mkdirSync(dirPath);
+    } catch (error) {
+      if (error.code !== 'EEXIST') throw error;
     }
   }
 }
