@@ -48,9 +48,9 @@ class Workload {
       process.send('finished');
     });
 
-    while (operations--) {
-      this.operationMethod();
-    }
+    splitExec(operations, 20, 50, (i) => {
+      while (i--) this.operationMethod();
+    });
   }
 
   initQueueCountInterval() {
@@ -66,6 +66,19 @@ class Workload {
       });
     }, 500);
   }
+}
+
+function splitExec(operations, split, delay, fn, iteration) {
+  var parts;
+
+  if ((iteration = iteration || 0) >= split) return;
+
+  parts = operations / split;
+  fn(parts, iteration);
+
+  setTimeout(() => {
+    splitExec(operations, split, delay, fn, ++iteration);
+  }, delay);
 }
 
 module.exports = Workload;
