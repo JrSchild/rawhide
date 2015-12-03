@@ -36,32 +36,40 @@ class ThroughputControllerPush extends ThroughputController {
       };
     }
 
-    console.log(`Running cycle ${options.current}/${options.cycles}`);
+    this.spawner.stopThreads();
+    this.spawner.spawnThreads();
+    this.threads = this.statistics.threads = this.spawner.threads;
+    this.initThreads();
+    this.statistics.initThreads();
 
-    this.workingThreadsMap = _.transform(this.threads, (result, thread) => {
-      result[thread.pid] = Promise.pending();
-    }, {});
+    this.spawner.threadsConnected.then(() => {
+      console.log(`Running cycle ${options.current}/${options.cycles}`);
 
-    started = Date.now();
-    this.threads.forEach((thread) => thread.send({
-      type: 'pushOperations',
-      data: options.operations / this.threads.length
-    }));
+      this.workingThreadsMap = _.transform(this.threads, (result, thread) => {
+        result[thread.pid] = Promise.pending();
+      }, {});
 
-    Promise.all(_.map(this.workingThreadsMap, (p) => p.promise))
-      .then(() => {
-        this.statistics.setResult(options.operations / ((Date.now() - started) / 1000));
-      })
-      .then(() => {
-        if (options.current++ < options.cycles) {
-          return Promise.delay(this.parameters.cycleCooldown);
-        }
+      started = Date.now();
+      this.threads.forEach((thread) => thread.send({
+        type: 'pushOperations',
+        data: options.operations / this.threads.length
+      }));
 
-        return this.statistics.finish()
-          .then(() => Promise.delay(1000))
-          .then(() => process.exit());
-      })
-      .then(() => this.start(options));
+      Promise.all(_.map(this.workingThreadsMap, (p) => p.promise))
+        .then(() => {
+          this.statistics.setResult(options.operations / ((Date.now() - started) / 1000));
+        })
+        .then(() => {
+          if (options.current++ < options.cycles) {
+            return Promise.delay(this.parameters.cycleCooldown);
+          }
+
+          return this.statistics.finish()
+            .then(() => Promise.delay(1000))
+            .then(() => process.exit());
+        })
+        .then(() => this.start(options));
+    });
   }
 }
 

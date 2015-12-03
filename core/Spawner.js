@@ -12,8 +12,7 @@ var settings = require('../settings.json');
 class Spawner {
   constructor(parameters) {
     this.parameters = parameters;
-    this.threads = [];
-    this.threadsConnected = [];
+    this.reset();
   }
 
   start() {
@@ -27,8 +26,14 @@ class Spawner {
     return true;
   }
 
+  stopThreads() {
+    this.threads.forEach((thread) => thread.kill());
+    this.reset();
+  }
+
   spawnThreads() {
     console.log('Spawning threads');
+    this.reset();
 
     // Also send the start time of when the threads are spanwed to each thread.
     // Useful for unique generation of objectIds as date in combination with thread number.
@@ -36,9 +41,7 @@ class Spawner {
 
     _.times(this.parameters.thread.multiply || 1, (id) => this.spawnThread(id));
 
-    process.on('exit', () => {
-      this.threads.forEach((thread) => thread.kill());
-    });
+    process.on('exit', () => this.stopThreads());
 
     // this.threadsConnected is an array of promises. Turn it into one promise to be resolved.
     return (this.threadsConnected = Promise.all(this.threadsConnected));
@@ -105,6 +108,11 @@ class Spawner {
         this.statistics = new Statistics(this);
         this.throughputController = new ThroughputController(this);
       });
+  }
+
+  reset() {
+    this.threads = [];
+    this.threadsConnected = [];
   }
 }
 

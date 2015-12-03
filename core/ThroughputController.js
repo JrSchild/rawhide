@@ -20,6 +20,7 @@ var parameters = loader('./parameters.json');
 class ThroughputController extends EventEmitter {
   constructor(spawner) {
     super();
+    this.spawner = spawner;
     this.threads = spawner.threads;
     this.statistics = spawner.statistics;
     this.reset();
