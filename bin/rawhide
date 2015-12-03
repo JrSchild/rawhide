@@ -178,7 +178,7 @@ function stat() {
 
       return [model, `${data.operations * data.results.length}`, `${data.results.length}`, `${~~data.average}`, bytes(data.size), bytes(data.totalIndexSize), `${data.count}`, bytes(data.avgObjSize), bytes(data.storageSize)];
     })
-    .sort((a, b) => ~~a[3] < ~~b[3]);
+    .sort((a, b) => ~~b[3] - ~~a[3]);
   table.unshift(['Model', 'Operations', 'Cycles', 'Ops/Sec', 'Size', 'Index Size', '# Documents', 'Avg document size', 'Storage Size']);
 
   // Find highest length in each column.
