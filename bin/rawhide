@@ -20,6 +20,7 @@ var argv = require('yargs')
     .alias('f', 'flaw')
     .describe('start', 'Start the test immediately.')
     .describe('flaw', 'Remove flaws from the statistics, (lowest and highest measurement)')
+    .alias('csv', 'Output the table in a csv format.')
     .demand(1).argv;
 var inquirer = require('inquirer');
 var path = require('path');
@@ -172,25 +173,33 @@ function stat() {
     });
   }
 
+  // Calculate lowest time.
+  var min = ~~_.min(results, (result) => result.average).average;
+
   var table = Object.keys(results)
     .map((model) => {
       var data = results[model];
+      var speed = Math.round(data.average / min * 1000) / 10;
 
-      return [model, `${data.operations * data.results.length}`, `${data.results.length}`, `${~~data.average}`, bytes(data.size), bytes(data.totalIndexSize), `${data.count}`, bytes(data.avgObjSize), bytes(data.storageSize)];
+      return [model, `${data.operations * data.results.length}`, `${data.results.length}`, `${~~data.average}`, bytes(data.size), bytes(data.totalIndexSize), `${data.count}`, bytes(data.avgObjSize), bytes(data.storageSize), `${speed}`];
     })
     .sort((a, b) => ~~b[3] - ~~a[3]);
-  table.unshift(['Model', 'Operations', 'Cycles', 'Ops/Sec', 'Size', 'Index Size', '# Documents', 'Avg document size', 'Storage Size']);
+  table.unshift(['Model', 'Operations', 'Cycles', 'Ops/Sec', 'Size', 'Index Size', '# Documents', 'Avg document size', 'Storage Size', 'Speed']);
 
   // Find highest length in each column.
-  var highest = _.unzip(table).map((column) => {
-    return _.reduce(column, (curr, cell) => Math.max(curr, cell.length), 0);
-  });
+  if (!argv.csv) {
+    var highest = _.unzip(table).map((column) => {
+      return _.reduce(column, (curr, cell) => Math.max(curr, cell.length), 0);
+    });
 
-  table = table.map((row) => {
-    return row.map((cell, cellI) => {
-      return cell + Array(highest[cellI] - cell.length + 1).join(' ');
-    }).join('  ');
-  });
+    table = table.map((row) => {
+      return row.map((cell, cellI) => {
+        return cell + Array(highest[cellI] - cell.length + 1).join(' ');
+      }).join('  ');
+    });
+  } else {
+    table = table.map((row) => row.join(';'));
+  }
 
   console.log(table.join('\n'));
 }
