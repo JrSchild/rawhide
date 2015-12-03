@@ -59,12 +59,12 @@ chart = $('#latencyChart').highcharts({
     name: 'Latency',
     type: 'area',
     data: []
-  }, {
+  }/*, {
     name: 'Operations per second',
     type: 'spline',
     yAxis: 1,
     data: []
-  }, {
+  }*/, {
     name: 'Executed operations per second',
     type: 'area',
     yAxis: 1,
@@ -79,6 +79,11 @@ socket.on('latency', function (latency) {
   if (latency[1] <= 0 && !started) {
     return;
   }
+
+  if (latency[1] === null) {
+    executedOperationsPerSecondBuffer.push([latency[0], 0]);
+  }
+
   started = true;
 
   latency[1] = Math.round(latency[1]);
@@ -98,7 +103,7 @@ socket.on('operationsPerSecond', function (operationsPerSecond) {
 
 socket.on('queueCount', function (queueCount) {
   if (started) {
-    console.log(queueCount[0], queueCount[1]);
+    // console.log(queueCount[0], queueCount[1]);
   }
 });
 
@@ -111,8 +116,8 @@ setInterval(function () {
   var series = chart.highcharts().series;
 
   latencyBuffer.forEach(function (v) { chart.highcharts().series[0].addPoint(v, false); });
-  operationsPerSecondBuffer.forEach(function (v) { series[1].addPoint(v, false); });
-  executedOperationsPerSecondBuffer.forEach(function (v) { series[2].addPoint(v, false); });
+  // operationsPerSecondBuffer.forEach(function (v) { series[1].addPoint(v, false); });
+  executedOperationsPerSecondBuffer.forEach(function (v) { series[1].addPoint(v, false); });
 
   latencyBuffer = [];
   operationsPerSecondBuffer = [];
